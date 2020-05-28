@@ -1,0 +1,26 @@
+{
+  "name": "line-app-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": ""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/agnadevs/line-app-server.git"
+  },
+  "author": "agna",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/agnadevs/line-app-server/issues"
+  },
+  "homepage": "https://github.com/agnadevs/line-app-server#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "socket-io": "^1.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  }
+}
