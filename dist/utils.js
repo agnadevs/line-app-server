@@ -39,51 +39,45 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var express_1 = __importDefault(require("express"));
-var users_1 = __importDefault(require("./users"));
-var bodyParser = require("body-parser");
-var http = require("http");
-var socketIO = require("socket.io");
-var port = 4000;
-var app = express_1.default();
-var server = http.createServer(app);
-var io = socketIO(server);
-app.use(function (req, res, next) {
-    res.header("Access-Control-Allow-Origin", "http://localhost:3000");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-    next();
-});
-app.use(express_1.default.json());
-app.get("/api/healthCheck", function (req, res) {
-    res.send({ message: "Gris" });
-});
-app.post("/api/users/newUser", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var userName, userObj;
+exports.writeDataToJSON = exports.getFormatedDataFromJSON = void 0;
+var fs_1 = __importDefault(require("fs"));
+var util_1 = __importDefault(require("util"));
+var readFile = util_1.default.promisify(fs_1.default.readFile);
+var writeFile = util_1.default.promisify(fs_1.default.writeFile);
+var getFormatedDataFromJSON = function (path) { return __awaiter(void 0, void 0, void 0, function () {
+    var jsonObject, err_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                userName = req.body.name;
-                return [4 /*yield*/, users_1.default(userName)];
+                _a.trys.push([0, 2, , 3]);
+                return [4 /*yield*/, readFile(path, "utf8")];
             case 1:
-                userObj = _a.sent();
-                console.log("User saved");
-                res.send(userObj);
-                return [2 /*return*/];
+                jsonObject = _a.sent();
+                return [2 /*return*/, JSON.parse(jsonObject)];
+            case 2:
+                err_1 = _a.sent();
+                throw new Error(err_1);
+            case 3: return [2 /*return*/];
         }
     });
-}); });
-io.on("connection", function (socket) {
-    socket.on("message", function (message) {
-        console.log(JSON.stringify(message));
-        var name = message.name, text = message.text;
-        io.emit("message", { text: text, name: name, userId: socket.id });
+}); };
+exports.getFormatedDataFromJSON = getFormatedDataFromJSON;
+var writeDataToJSON = function (path, data) { return __awaiter(void 0, void 0, void 0, function () {
+    var stringifiedData, err_2;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 2, , 3]);
+                stringifiedData = JSON.stringify(data);
+                return [4 /*yield*/, writeFile(path, stringifiedData)];
+            case 1:
+                _a.sent();
+                return [3 /*break*/, 3];
+            case 2:
+                err_2 = _a.sent();
+                throw new Error(err_2);
+            case 3: return [2 /*return*/];
+        }
     });
-    socket.on("disconnect", function (data) {
-        io.emit("admin-message", {
-            name: "Admin",
-            text: "A user has left the chat",
-        });
-    });
-});
-server.listen(port, function () { return console.log("listening on port " + port + ".."); });
+}); };
+exports.writeDataToJSON = writeDataToJSON;
