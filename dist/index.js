@@ -40,7 +40,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var express_1 = __importDefault(require("express"));
-var users_1 = __importDefault(require("./users"));
+var users_1 = require("./users");
 var bodyParser = require("body-parser");
 var http = require("http");
 var socketIO = require("socket.io");
@@ -58,13 +58,32 @@ app.use(express_1.default.json());
 app.get("/api/healthCheck", function (req, res) {
     res.send({ message: "Gris" });
 });
+app.get("/api/users", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var users, err_1;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 2, , 3]);
+                return [4 /*yield*/, users_1.getUsers()];
+            case 1:
+                users = _a.sent();
+                res.send(users);
+                return [3 /*break*/, 3];
+            case 2:
+                err_1 = _a.sent();
+                res.send(err_1);
+                return [3 /*break*/, 3];
+            case 3: return [2 /*return*/];
+        }
+    });
+}); });
 app.post("/api/users/newUser", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var userName, userObj;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 userName = req.body.name;
-                return [4 /*yield*/, users_1.default(userName)];
+                return [4 /*yield*/, users_1.addNewUser(userName)];
             case 1:
                 userObj = _a.sent();
                 console.log("User saved");

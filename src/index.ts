@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import createNewUser from "./users";
+import { addNewUser, getUsers } from "./users";
 const bodyParser = require("body-parser");
 const http = require("http");
 const socketIO = require("socket.io");
@@ -25,9 +25,18 @@ app.get("/api/healthCheck", (req: Request, res: Response) => {
   res.send({ message: "Gris" });
 });
 
+app.get("/api/users", async (req: Request, res: Response) => {
+  try {
+    const users = await getUsers();
+    res.send(users);
+  } catch(err) {
+    res.send(err);
+  }
+});
+
 app.post("/api/users/newUser", async (req: Request, res: Response) => {
   const userName = req.body.name;
-  const userObj = await createNewUser(userName);
+  const userObj = await addNewUser(userName);
   console.log("User saved");
   res.send(userObj);
 });

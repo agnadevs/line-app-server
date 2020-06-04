@@ -38,7 +38,19 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var uuid_1 = require("uuid");
 var utils_1 = require("./utils");
-exports.default = (function (userName) { return __awaiter(void 0, void 0, void 0, function () {
+var getUsers = function () { return __awaiter(void 0, void 0, void 0, function () {
+    var users;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, utils_1.getFormatedDataFromJSON("dist/users.json")];
+            case 1:
+                users = (_a.sent()).users;
+                return [2 /*return*/, users];
+        }
+    });
+}); };
+exports.getUsers = getUsers;
+var addNewUser = function (userName) { return __awaiter(void 0, void 0, void 0, function () {
     var users, newUser, err_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -64,4 +76,5 @@ exports.default = (function (userName) { return __awaiter(void 0, void 0, void 0
             case 4: return [2 /*return*/];
         }
     });
-}); });
+}); };
+exports.addNewUser = addNewUser;

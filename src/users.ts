@@ -1,7 +1,18 @@
 import { v4 as uuidv4 } from "uuid";
 import { getFormatedDataFromJSON, writeDataToJSON } from "./utils";
 
-export default async (userName: string) => {
+type User = {
+  userName: string,
+  userId: string,
+  createdAt: string,
+}
+
+const getUsers = async () => {
+  const { users } = await getFormatedDataFromJSON("dist/users.json");
+  return users;
+}
+
+const addNewUser = async (userName: string) => {
   try {
     const { users } = await getFormatedDataFromJSON("dist/users.json");
 
@@ -19,3 +30,5 @@ export default async (userName: string) => {
     console.log(err);
   }
 };
+
+export {addNewUser, getUsers}
