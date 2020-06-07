@@ -29,7 +29,7 @@ app.get("/api/users", async (req: Request, res: Response) => {
   try {
     const users = await getUsers();
     res.send(users);
-  } catch(err) {
+  } catch (err) {
     res.send(err);
   }
 });
@@ -44,14 +44,31 @@ app.post("/api/users/newUser", async (req: Request, res: Response) => {
 interface ChatMessage {
   name: string;
   text: string;
+  userId: string;
 }
 
-io.on("connection", (socket: any) => {
-  socket.on("message", (message: ChatMessage) => {
-    console.log(JSON.stringify(message));
-    const { name, text } = message;
+type Data = {
+  room: string;
+  user: {
+    userName: string;
+    userId: string;
+  };
+};
 
-    io.emit("message", { text, name, userId: socket.id });
+io.on("connection", (socket: any) => {
+  socket.on("joinRoom", (data: Data) => {
+    socket.join(data.room);
+
+    socket.on("message", (message: ChatMessage) => {
+      const { name, text, userId } = message;
+      io.to(data.room).emit("message", { text, name, userId });
+    });
+  });
+
+  socket.on("leaveRoom", (data: Data) => {
+    socket.leave(data.room);
+    console.log(`${data.user.userName} left the room`);
+    // socket.to(data.room).emit('');
   });
 
   socket.on("disconnect", (data: any) => {

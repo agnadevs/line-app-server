@@ -36,6 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.getUsers = exports.addNewUser = void 0;
 var uuid_1 = require("uuid");
 var utils_1 = require("./utils");
 var getUsers = function () { return __awaiter(void 0, void 0, void 0, function () {

@@ -93,10 +93,17 @@ app.post("/api/users/newUser", function (req, res) { return __awaiter(void 0, vo
     });
 }); });
 io.on("connection", function (socket) {
-    socket.on("message", function (message) {
-        console.log(JSON.stringify(message));
-        var name = message.name, text = message.text;
-        io.emit("message", { text: text, name: name, userId: socket.id });
+    socket.on("joinRoom", function (data) {
+        socket.join(data.room);
+        socket.on("message", function (message) {
+            var name = message.name, text = message.text, userId = message.userId;
+            io.to(data.room).emit("message", { text: text, name: name, userId: userId });
+        });
+    });
+    socket.on("leaveRoom", function (data) {
+        socket.leave(data.room);
+        console.log(data.user.userName + " left the room");
+        // socket.to(data.room).emit('');
     });
     socket.on("disconnect", function (data) {
         io.emit("admin-message", {
