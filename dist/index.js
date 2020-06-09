@@ -41,6 +41,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var express_1 = __importDefault(require("express"));
 var users_1 = require("./users");
+var messages_1 = require("./messages");
 var bodyParser = require("body-parser");
 var http = require("http");
 var socketIO = require("socket.io");
@@ -77,6 +78,28 @@ app.get("/api/users", function (req, res) { return __awaiter(void 0, void 0, voi
         }
     });
 }); });
+app.get("/api/chat/:room", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var room, history_1, err_2;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                room = req.params.room;
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, messages_1.getMessagesForRoom(room)];
+            case 2:
+                history_1 = _a.sent();
+                res.send(history_1);
+                return [3 /*break*/, 4];
+            case 3:
+                err_2 = _a.sent();
+                res.send(err_2);
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); });
 app.post("/api/users/newUser", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var userName, userObj;
     return __generator(this, function (_a) {
@@ -94,22 +117,34 @@ app.post("/api/users/newUser", function (req, res) { return __awaiter(void 0, vo
 }); });
 io.on("connection", function (socket) {
     socket.on("joinRoom", function (data) {
-        socket.join(data.room);
-        socket.on("message", function (message) {
-            var name = message.name, text = message.text, userId = message.userId;
-            io.to(data.room).emit("message", { text: text, name: name, userId: userId });
+        var room = data.room, user = data.user;
+        socket.join(room);
+        socket.to(room).broadcast.emit('messageFromServer', { text: user.userName + " has joined the room",
+            userName: "Line manager",
         });
+        socket.on("messageFromClient", function (message) { return __awaiter(void 0, void 0, void 0, function () {
+            var text, userName, userId, timestamp, roomId, newMessage;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        text = message.text, userName = message.userName, userId = message.userId, timestamp = message.timestamp, roomId = message.roomId;
+                        return [4 /*yield*/, messages_1.addNewMessage(message, room)];
+                    case 1:
+                        newMessage = _a.sent();
+                        io.to(room).emit("messageFromServer", newMessage);
+                        return [2 /*return*/];
+                }
+            });
+        }); });
     });
     socket.on("leaveRoom", function (data) {
-        socket.leave(data.room);
-        console.log(data.user.userName + " left the room");
-        // socket.to(data.room).emit('');
+        var room = data.room, user = data.user;
+        socket.leave(room);
+        socket.to(room).broadcast.emit('messageFromServer', { text: user.userName + " has left the room",
+            userName: "Line manager",
+        });
     });
     socket.on("disconnect", function (data) {
-        io.emit("admin-message", {
-            name: "Admin",
-            text: "A user has left the chat",
-        });
     });
 });
 server.listen(port, function () { return console.log("listening on port " + port + ".."); });

@@ -1,5 +1,6 @@
 import express, { Request, Response } from "express";
 import { addNewUser, getUsers } from "./users";
+import { addNewMessage, getMessagesForRoom } from "./messages";
 const bodyParser = require("body-parser");
 const http = require("http");
 const socketIO = require("socket.io");
@@ -34,6 +35,16 @@ app.get("/api/users", async (req: Request, res: Response) => {
   }
 });
 
+app.get("/api/chat/:room", async (req: Request, res: Response) => {
+  const {room} = req.params
+  try {
+    const history = await getMessagesForRoom(room);
+    res.send(history);
+  } catch (err) {
+    res.send(err);
+  }
+});
+
 app.post("/api/users/newUser", async (req: Request, res: Response) => {
   const userName = req.body.name;
   const userObj = await addNewUser(userName);
@@ -41,11 +52,14 @@ app.post("/api/users/newUser", async (req: Request, res: Response) => {
   res.send(userObj);
 });
 
-interface ChatMessage {
-  name: string;
+type ChatMessage = {
   text: string;
+  userName: string;
   userId: string;
+  timestamp: string;
+  roomId: string;
 }
+
 
 type Data = {
   room: string;
@@ -55,27 +69,34 @@ type Data = {
   };
 };
 
+
 io.on("connection", (socket: any) => {
   socket.on("joinRoom", (data: Data) => {
-    socket.join(data.room);
+    const {room, user} = data;
 
-    socket.on("message", (message: ChatMessage) => {
-      const { name, text, userId } = message;
-      io.to(data.room).emit("message", { text, name, userId });
+    socket.join(room);
+    socket.to(room).broadcast.emit('messageFromServer',{ text: `${user.userName} has joined the room`,
+      userName: "Line manager",
+      });
+
+    socket.on("messageFromClient", async (message: ChatMessage) => {
+      const {text, userName, userId, timestamp, roomId } = message;
+      const newMessage = await addNewMessage(message, room)
+
+      io.to(room).emit("messageFromServer", newMessage);
     });
   });
 
   socket.on("leaveRoom", (data: Data) => {
-    socket.leave(data.room);
-    console.log(`${data.user.userName} left the room`);
-    // socket.to(data.room).emit('');
+    const {room, user} = data
+    socket.leave(room);
+
+    socket.to(room).broadcast.emit('messageFromServer',{ text: `${user.userName} has left the room`,
+      userName: "Line manager",
+      });
   });
 
   socket.on("disconnect", (data: any) => {
-    io.emit("admin-message", {
-      name: "Admin",
-      text: "A user has left the chat",
-    });
   });
 });
 

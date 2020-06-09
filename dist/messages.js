@@ -35,48 +35,47 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-var fs_1 = __importDefault(require("fs"));
-var util_1 = __importDefault(require("util"));
-var readFile = util_1.default.promisify(fs_1.default.readFile);
-var writeFile = util_1.default.promisify(fs_1.default.writeFile);
-var getFormatedDataFromJSON = function (path) { return __awaiter(void 0, void 0, void 0, function () {
-    var jsonObject, err_1;
+var utils_1 = require("./utils");
+var getMessagesForRoom = function (room) { return __awaiter(void 0, void 0, void 0, function () {
+    var messages;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0:
-                _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, readFile(path, "utf8")];
+            case 0: return [4 /*yield*/, utils_1.getFormatedDataFromJSON("dist/chatHistory.json")];
             case 1:
-                jsonObject = _a.sent();
-                return [2 /*return*/, JSON.parse(jsonObject)];
-            case 2:
-                err_1 = _a.sent();
-                throw new Error(err_1);
-            case 3: return [2 /*return*/];
+                messages = (_a.sent()).messages;
+                return [2 /*return*/, messages.filter(function (msg) { return msg.roomId === room; })];
         }
     });
 }); };
-exports.getFormatedDataFromJSON = getFormatedDataFromJSON;
-var writeDataToJSON = function (path, data) { return __awaiter(void 0, void 0, void 0, function () {
-    var stringifiedData, err_2;
+exports.getMessagesForRoom = getMessagesForRoom;
+var addNewMessage = function (message, room) { return __awaiter(void 0, void 0, void 0, function () {
+    var messages, newMessage, err_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                _a.trys.push([0, 2, , 3]);
-                stringifiedData = JSON.stringify(data);
-                return [4 /*yield*/, writeFile(path, stringifiedData)];
+                _a.trys.push([0, 3, , 4]);
+                return [4 /*yield*/, utils_1.getFormatedDataFromJSON("dist/chatHistory.json")];
             case 1:
+                messages = (_a.sent()).messages;
+                newMessage = {
+                    text: message.text,
+                    userName: message.userName,
+                    userId: message.userId,
+                    timestamp: message.timestamp,
+                    roomId: room
+                };
+                messages.push(newMessage);
+                return [4 /*yield*/, utils_1.writeDataToJSON("dist/chatHistory.json", { messages: messages })];
+            case 2:
                 _a.sent();
-                return [3 /*break*/, 3];
-            case 2:
-                err_2 = _a.sent();
-                throw new Error(err_2);
-            case 3: return [2 /*return*/];
+                return [2 /*return*/, message];
+            case 3:
+                err_1 = _a.sent();
+                console.log(err_1);
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
         }
     });
 }); };
-exports.writeDataToJSON = writeDataToJSON;
+exports.addNewMessage = addNewMessage;
