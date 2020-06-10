@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -116,35 +127,61 @@ app.post("/api/users/newUser", function (req, res) { return __awaiter(void 0, vo
     });
 }); });
 io.on("connection", function (socket) {
-    socket.on("joinRoom", function (data) {
-        var room = data.room, user = data.user;
-        socket.join(room);
-        socket.to(room).broadcast.emit('messageFromServer', { text: user.userName + " has joined the room",
-            userName: "Line manager",
+    socket.on("joinRoom", function (data) { return __awaiter(void 0, void 0, void 0, function () {
+        var room, user, socketId, newUser, activeUsers, apa;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    room = data.room, user = data.user;
+                    socket.join(room);
+                    socketId = socket.id;
+                    newUser = __assign(__assign({}, user), { socketId: socketId });
+                    return [4 /*yield*/, users_1.addUserToRoom(newUser, room)];
+                case 1:
+                    activeUsers = _a.sent();
+                    io.in(room).emit("activeUsersInRoom", activeUsers);
+                    apa = io.sockets.adapter.rooms[room];
+                    socket.to(room).emit("messageFromServer", {
+                        text: user.userName + " has joined the room",
+                        userName: "Line manager",
+                    });
+                    socket.on("messageFromClient", function (message) { return __awaiter(void 0, void 0, void 0, function () {
+                        var text, userName, userId, timestamp, roomId, newMessage;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    text = message.text, userName = message.userName, userId = message.userId, timestamp = message.timestamp, roomId = message.roomId;
+                                    return [4 /*yield*/, messages_1.addNewMessage(message, room)];
+                                case 1:
+                                    newMessage = _a.sent();
+                                    io.in(room).emit("messageFromServer", newMessage);
+                                    return [2 /*return*/];
+                            }
+                        });
+                    }); });
+                    return [2 /*return*/];
+            }
         });
-        socket.on("messageFromClient", function (message) { return __awaiter(void 0, void 0, void 0, function () {
-            var text, userName, userId, timestamp, roomId, newMessage;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        text = message.text, userName = message.userName, userId = message.userId, timestamp = message.timestamp, roomId = message.roomId;
-                        return [4 /*yield*/, messages_1.addNewMessage(message, room)];
-                    case 1:
-                        newMessage = _a.sent();
-                        io.to(room).emit("messageFromServer", newMessage);
-                        return [2 /*return*/];
-                }
-            });
-        }); });
-    });
-    socket.on("leaveRoom", function (data) {
-        var room = data.room, user = data.user;
-        socket.leave(room);
-        socket.to(room).broadcast.emit('messageFromServer', { text: user.userName + " has left the room",
-            userName: "Line manager",
+    }); });
+    socket.on("leaveRoom", function (data) { return __awaiter(void 0, void 0, void 0, function () {
+        var room, user, activeUsers;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    room = data.room, user = data.user;
+                    return [4 /*yield*/, users_1.deleteUserFromRoom(user, room)];
+                case 1:
+                    activeUsers = _a.sent();
+                    io.in(room).emit("activeUsersInRoom", activeUsers);
+                    socket.leave(room);
+                    socket.to(room).emit("messageFromServer", {
+                        text: user.userName + " has left the room",
+                        userName: "Line manager",
+                    });
+                    return [2 /*return*/];
+            }
         });
-    });
-    socket.on("disconnect", function (data) {
-    });
+    }); });
+    socket.on("disconnect", function (data) { });
 });
 server.listen(port, function () { return console.log("listening on port " + port + ".."); });

@@ -36,6 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.getMessagesForRoom = exports.addNewMessage = void 0;
 var utils_1 = require("./utils");
 var getMessagesForRoom = function (room) { return __awaiter(void 0, void 0, void 0, function () {
     var messages;

@@ -36,6 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.deleteUserFromRoom = exports.addUserToRoom = exports.getUsers = exports.addNewUser = void 0;
 var uuid_1 = require("uuid");
 var utils_1 = require("./utils");
 var getUsers = function () { return __awaiter(void 0, void 0, void 0, function () {
@@ -78,3 +79,60 @@ var addNewUser = function (userName) { return __awaiter(void 0, void 0, void 0, 
     });
 }); };
 exports.addNewUser = addNewUser;
+var addUserToRoom = function (user, room) { return __awaiter(void 0, void 0, void 0, function () {
+    var rooms, existingUser, activeUsersInRoom, err_2;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 3, , 4]);
+                return [4 /*yield*/, utils_1.getFormatedDataFromJSON("dist/rooms.json")];
+            case 1:
+                rooms = (_a.sent()).rooms;
+                existingUser = rooms[room].find(function (currentUser) { return user.userId === currentUser.userId; });
+                if (!!existingUser) {
+                    rooms[room].find(function (currentUser) { return user.userId === currentUser.userId; }).socketId = user.socketId;
+                }
+                else {
+                    rooms[room].push(user);
+                }
+                return [4 /*yield*/, utils_1.writeDataToJSON("dist/rooms.json", { rooms: rooms })];
+            case 2:
+                _a.sent();
+                activeUsersInRoom = rooms[room];
+                return [2 /*return*/, activeUsersInRoom];
+            case 3:
+                err_2 = _a.sent();
+                console.log(err_2);
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); };
+exports.addUserToRoom = addUserToRoom;
+var deleteUserFromRoom = function (user, room) { return __awaiter(void 0, void 0, void 0, function () {
+    var rooms, arrayWhenUserIsRemoved, activeUsersInRoom, err_3;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 3, , 4]);
+                return [4 /*yield*/, utils_1.getFormatedDataFromJSON("dist/rooms.json")];
+            case 1:
+                rooms = (_a.sent()).rooms;
+                arrayWhenUserIsRemoved = rooms[room].filter(function (currentUser) {
+                    return user.userId !== currentUser.userId;
+                });
+                rooms[room] = arrayWhenUserIsRemoved;
+                return [4 /*yield*/, utils_1.writeDataToJSON("dist/rooms.json", { rooms: rooms })];
+            case 2:
+                _a.sent();
+                activeUsersInRoom = rooms[room];
+                return [2 /*return*/, activeUsersInRoom];
+            case 3:
+                err_3 = _a.sent();
+                console.log(err_3);
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); };
+exports.deleteUserFromRoom = deleteUserFromRoom;

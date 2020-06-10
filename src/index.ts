@@ -1,5 +1,10 @@
 import express, { Request, Response } from "express";
-import { addNewUser, getUsers } from "./users";
+import {
+  addNewUser,
+  getUsers,
+  addUserToRoom,
+  deleteUserFromRoom,
+} from "./users";
 import { addNewMessage, getMessagesForRoom } from "./messages";
 const bodyParser = require("body-parser");
 const http = require("http");
@@ -36,7 +41,7 @@ app.get("/api/users", async (req: Request, res: Response) => {
 });
 
 app.get("/api/chat/:room", async (req: Request, res: Response) => {
-  const {room} = req.params
+  const { room } = req.params;
   try {
     const history = await getMessagesForRoom(room);
     res.send(history);
@@ -58,8 +63,7 @@ type ChatMessage = {
   userId: string;
   timestamp: string;
   roomId: string;
-}
-
+};
 
 type Data = {
   room: string;
@@ -69,35 +73,43 @@ type Data = {
   };
 };
 
-
 io.on("connection", (socket: any) => {
-  socket.on("joinRoom", (data: Data) => {
-    const {room, user} = data;
-
+  socket.on("joinRoom", async (data: Data) => {
+    const { room, user } = data;
     socket.join(room);
-    socket.to(room).broadcast.emit('messageFromServer',{ text: `${user.userName} has joined the room`,
+    const socketId: string = socket.id;
+    const newUser = { ...user, socketId };
+    const activeUsers = await addUserToRoom(newUser, room);
+    io.in(room).emit("activeUsersInRoom", activeUsers);
+
+    const apa = io.sockets.adapter.rooms[room];
+
+    socket.to(room).emit("messageFromServer", {
+      text: `${user.userName} has joined the room`,
       userName: "Line manager",
-      });
+    });
 
     socket.on("messageFromClient", async (message: ChatMessage) => {
-      const {text, userName, userId, timestamp, roomId } = message;
-      const newMessage = await addNewMessage(message, room)
+      const { text, userName, userId, timestamp, roomId } = message;
+      const newMessage = await addNewMessage(message, room);
 
-      io.to(room).emit("messageFromServer", newMessage);
+      io.in(room).emit("messageFromServer", newMessage);
     });
   });
 
-  socket.on("leaveRoom", (data: Data) => {
-    const {room, user} = data
+  socket.on("leaveRoom", async (data: Data) => {
+    const { room, user } = data;
+    const activeUsers = await deleteUserFromRoom(user, room);
+    io.in(room).emit("activeUsersInRoom", activeUsers);
     socket.leave(room);
 
-    socket.to(room).broadcast.emit('messageFromServer',{ text: `${user.userName} has left the room`,
+    socket.to(room).emit("messageFromServer", {
+      text: `${user.userName} has left the room`,
       userName: "Line manager",
-      });
+    });
   });
 
-  socket.on("disconnect", (data: any) => {
-  });
+  socket.on("disconnect", (data: any) => {});
 });
 
 server.listen(port, () => console.log(`listening on port ${port}..`));
