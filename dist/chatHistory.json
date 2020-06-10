@@ -1,1 +1,60 @@
-{"messages":[]}
+{
+  "messages": [
+    {
+      "text": "hj",
+      "userName": "Andrea",
+      "userId": "4508956d-caa9-41e1-acb6-2539c8126495",
+      "timestamp": "2020-06-10T08:53:42.630Z",
+      "roomId": "react"
+    },
+    {
+      "text": "hellooooo???",
+      "userName": "Andrea",
+      "userId": "4508956d-caa9-41e1-acb6-2539c8126495",
+      "timestamp": "2020-06-10T08:54:35.187Z",
+      "roomId": "react"
+    },
+    {
+      "text": "Hej hej",
+      "userName": "Nalle-Maja",
+      "userId": "9190e7a9-0a49-4178-ba9b-4a46793cf4a1",
+      "timestamp": "2020-06-10T08:54:39.543Z",
+      "roomId": "react"
+    },
+    {
+      "text": "hejhej",
+      "userName": "Andrea",
+      "userId": "4508956d-caa9-41e1-acb6-2539c8126495",
+      "timestamp": "2020-06-10T09:41:13.255Z",
+      "roomId": "react"
+    },
+    {
+      "text": "Hej hej hej",
+      "userName": "Nalle-Maja",
+      "userId": "9190e7a9-0a49-4178-ba9b-4a46793cf4a1",
+      "timestamp": "2020-06-10T09:41:17.179Z",
+      "roomId": "react"
+    },
+    {
+      "text": "tjena tjena",
+      "userName": "Andrea",
+      "userId": "4508956d-caa9-41e1-acb6-2539c8126495",
+      "timestamp": "2020-06-10T09:41:20.691Z",
+      "roomId": "react"
+    },
+    {
+      "text": "I'm baby la croix banjo kombucha craft beer, pork belly literally everyday carry roof party synth sartorial gochujang health goth. Twee flexitarian stumptown put a bird on it. Occupy wayfarers migas kickstarter offal helvetica disrupt gastropub tofu quinoa microdosing. Cronut art party YOLO, cloud bread readymade single-origin coffee live-edge ramps lomo vegan direct trade gluten-free brunch. Swag polaroid organic farm-to-table jean shorts. Gastropub stumptown health goth, cronut selfies hella VHS pug lyft.",
+      "userName": "Andrea",
+      "userId": "4508956d-caa9-41e1-acb6-2539c8126495",
+      "timestamp": "2020-06-10T12:02:22.279Z",
+      "roomId": "react"
+    },
+    {
+      "text": "I'm baby la croix banjo kombucha craft beer, pork belly literally everyday carry roof party synth sartorial gochujang health goth. Twee flexitarian stumptown put a bird on it. Occupy wayfarers migas kickstarter offal helvetica disrupt gastropub tofu quinoa microdosing. Cronut art party YOLO, cloud bread readymade single-origin coffee live-edge ramps lomo vegan direct trade gluten-free brunch. Swag polaroid organic farm-to-table jean shorts. Gastropub stumptown health goth, cronut selfies hella VHS pug lyft.",
+      "userName": "Nalle-Maja",
+      "userId": "9190e7a9-0a49-4178-ba9b-4a46793cf4a1",
+      "timestamp": "2020-06-10T12:02:43.611Z",
+      "roomId": "react"
+    }
+  ]
+}
