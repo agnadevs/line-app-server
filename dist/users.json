@@ -1,14 +1,1 @@
-{
-  "users": [
-    {
-      "userName": "Brumme-Lisa",
-      "userId": "2bf49d47-df8c-4029-b502-39454ae08994",
-      "createdAt": "2020-06-10T07:49:47.654Z"
-    },
-    {
-      "userName": "Vargen",
-      "userId": "c904734b-b85d-485c-ba30-5ea9a6b76580",
-      "createdAt": "2020-06-10T09:35:56.817Z"
-    }
-  ]
-}
+{"users":[{"userName":"Brumme-Lisa","userId":"2bf49d47-df8c-4029-b502-39454ae08994","createdAt":"2020-06-10T07:49:47.654Z"},{"userName":"Vargen","userId":"c904734b-b85d-485c-ba30-5ea9a6b76580","createdAt":"2020-06-10T09:35:56.817Z"},{"userName":"andersson","firstName":"nils andersson","lastName":"nils","userId":"104063052261089765770","createdAt":"2020-06-11T14:17:30.362Z"},{"userName":"Gylling","firstName":"Andrea Gylling","lastName":"Andrea","userId":"115257051944211650687","createdAt":"2020-06-11T14:18:48.200Z"},{"userName":"Gylling","firstName":"Andrea Gylling","lastName":"Andrea","userId":"115257051944211650687","createdAt":"2020-06-11T14:24:32.603Z"},{"userName":"andersson","firstName":"nils andersson","lastName":"nils","userId":"104063052261089765770","createdAt":"2020-06-11T14:24:54.020Z"},{"userName":"Gylling","firstName":"Andrea Gylling","lastName":"Andrea","userId":"115257051944211650687","createdAt":"2020-06-11T14:25:41.148Z"},{"userName":"andersson","firstName":"nils andersson","lastName":"nils","userId":"104063052261089765770","createdAt":"2020-06-11T14:25:48.930Z"}]}

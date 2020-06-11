@@ -5,10 +5,13 @@ import {
   addUserToRoom,
   deleteUserFromRoom,
 } from "./users";
+import { ChatMessage, User } from "./types";
 import { addNewMessage, getMessagesForRoom } from "./messages";
 const bodyParser = require("body-parser");
 const http = require("http");
 const socketIO = require("socket.io");
+const { OAuth2Client } = require("google-auth-library");
+const client = new OAuth2Client(process.env.CLIENT_ID);
 const port = 4000;
 
 const app = express();
@@ -33,10 +36,10 @@ app.get("/api/healthCheck", (req: Request, res: Response) => {
 
 app.get("/api/users", async (req: Request, res: Response) => {
   try {
-    const users = await getUsers();
-    res.send(users);
+    const users: User[] = await getUsers();
+    res.send({ error: null, data: users });
   } catch (err) {
-    res.send(err);
+    res.send({ error: err, data: null });
   }
 });
 
@@ -44,26 +47,39 @@ app.get("/api/chat/:room", async (req: Request, res: Response) => {
   const { room } = req.params;
   try {
     const history = await getMessagesForRoom(room);
-    res.send(history);
+    res.send({ error: null, data: history });
   } catch (err) {
-    res.send(err);
+    res.send({ error: err, data: null });
   }
 });
 
-app.post("/api/users/newUser", async (req: Request, res: Response) => {
-  const userName = req.body.name;
-  const userObj = await addNewUser(userName);
-  console.log("User saved");
-  res.send(userObj);
+app.post("/api/login", async (req: Request, res: Response) => {
+  try {
+    const id_token = req.body.accessToken;
+    const payload = await verify(id_token).catch((err) => {});
+    const { sub, name, given_name, family_name } = payload;
+    const users = await getUsers();
+    const existingUser = users.find((user: User) => user.userId === sub);
+
+    if (existingUser) {
+      res.send(existingUser);
+    }
+    const newUser = await addNewUser(sub, name, given_name, family_name);
+    res.send({ error: null, data: newUser });
+    return;
+  } catch (err) {
+    res.send({ error: err, data: null });
+  }
 });
 
-type ChatMessage = {
-  text: string;
-  userName: string;
-  userId: string;
-  timestamp: string;
-  roomId: string;
-};
+async function verify(token: string) {
+  const ticket = await client.verifyIdToken({
+    idToken: token,
+    audience: process.env.CLIENT_ID,
+  });
+  const payload = ticket.getPayload();
+  return payload;
+}
 
 type Data = {
   room: string;

@@ -1,25 +1,25 @@
-import { v4 as uuidv4 } from "uuid";
 import { getFormatedDataFromJSON, writeDataToJSON } from "./utils";
-
-type User = {
-  userName: string;
-  userId: string;
-  createdAt?: string;
-  socketId?: string;
-};
+import { User } from "./types";
 
 const getUsers = async () => {
   const { users } = await getFormatedDataFromJSON("dist/users.json");
   return users;
 };
 
-const addNewUser = async (userName: string) => {
+const addNewUser = async (
+  sub: string,
+  given_name: string,
+  family_name: string,
+  name: string
+) => {
   try {
     const { users } = await getFormatedDataFromJSON("dist/users.json");
 
     const newUser = {
-      userName,
-      userId: uuidv4(),
+      userName: name,
+      firstName: given_name,
+      lastName: family_name,
+      userId: sub,
       createdAt: new Date(),
     };
     users.push(newUser);

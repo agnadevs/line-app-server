@@ -36,8 +36,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteUserFromRoom = exports.addUserToRoom = exports.getUsers = exports.addNewUser = void 0;
-var uuid_1 = require("uuid");
 var utils_1 = require("./utils");
 var getUsers = function () { return __awaiter(void 0, void 0, void 0, function () {
     var users;
@@ -51,7 +49,7 @@ var getUsers = function () { return __awaiter(void 0, void 0, void 0, function (
     });
 }); };
 exports.getUsers = getUsers;
-var addNewUser = function (userName) { return __awaiter(void 0, void 0, void 0, function () {
+var addNewUser = function (sub, given_name, family_name, name) { return __awaiter(void 0, void 0, void 0, function () {
     var users, newUser, err_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -61,8 +59,10 @@ var addNewUser = function (userName) { return __awaiter(void 0, void 0, void 0, 
             case 1:
                 users = (_a.sent()).users;
                 newUser = {
-                    userName: userName,
-                    userId: uuid_1.v4(),
+                    userName: name,
+                    firstName: given_name,
+                    lastName: family_name,
+                    userId: sub,
                     createdAt: new Date(),
                 };
                 users.push(newUser);
