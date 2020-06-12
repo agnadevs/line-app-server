@@ -55,6 +55,20 @@
       "userId": "9190e7a9-0a49-4178-ba9b-4a46793cf4a1",
       "timestamp": "2020-06-10T12:02:43.611Z",
       "roomId": "react"
+    },
+    {
+      "text": "Hej hej",
+      "userName": "andersson",
+      "userId": "104063052261089765770",
+      "timestamp": "2020-06-12T06:59:19.843Z",
+      "roomId": "react"
+    },
+    {
+      "text": "Hej hej hallåååå",
+      "userName": "andersson",
+      "userId": "104063052261089765770",
+      "timestamp": "2020-06-12T07:01:13.464Z",
+      "roomId": "vue"
     }
   ]
 }

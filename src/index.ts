@@ -11,7 +11,10 @@ const bodyParser = require("body-parser");
 const http = require("http");
 const socketIO = require("socket.io");
 const { OAuth2Client } = require("google-auth-library");
-const client = new OAuth2Client(process.env.CLIENT_ID);
+// const client = new OAuth2Client(process.env.CLIENT_ID);
+const client = new OAuth2Client(
+  "627288097347-5a68p3saa38s53fqmmllk8773odutoc2.apps.googleusercontent.com"
+);
 const port = 4000;
 
 const app = express();
@@ -61,12 +64,14 @@ app.post("/api/login", async (req: Request, res: Response) => {
     const users = await getUsers();
     const existingUser = users.find((user: User) => user.userId === sub);
 
+    console.log("existingUser: ", existingUser);
+
     if (existingUser) {
-      res.send(existingUser);
+      res.send({ error: null, data: existingUser });
     }
     const newUser = await addNewUser(sub, name, given_name, family_name);
+    console.log("newUser: ", newUser);
     res.send({ error: null, data: newUser });
-    return;
   } catch (err) {
     res.send({ error: err, data: null });
   }
@@ -75,7 +80,9 @@ app.post("/api/login", async (req: Request, res: Response) => {
 async function verify(token: string) {
   const ticket = await client.verifyIdToken({
     idToken: token,
-    audience: process.env.CLIENT_ID,
+    audience:
+      "627288097347-5a68p3saa38s53fqmmllk8773odutoc2.apps.googleusercontent.com",
+    // audience: process.env.CLIENT_ID,
   });
   const payload = ticket.getPayload();
   return payload;
