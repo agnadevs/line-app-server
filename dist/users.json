@@ -1,1 +1,18 @@
-{"users":[{"userName":"andersson","firstName":"nils andersson","lastName":"nils","userId":"104063052261089765770","createdAt":"2020-06-11T15:39:47.732Z"},{"userName":"andersson","firstName":"nils andersson","lastName":"nils","userId":"104063052261089765770","createdAt":"2020-06-12T07:12:09.164Z"}]}
+{
+  "users": [
+    {
+      "userName": "Andrea Gylling",
+      "firstName": "Andrea",
+      "lastName": "Gylling",
+      "userId": "115257051944211650687",
+      "createdAt": "2020-06-12T08:24:17.749Z"
+    },
+    {
+      "userName": "nils andersson",
+      "firstName": "nils",
+      "lastName": "andersson",
+      "userId": "104063052261089765770",
+      "createdAt": "2020-06-12T08:26:06.233Z"
+    }
+  ]
+}

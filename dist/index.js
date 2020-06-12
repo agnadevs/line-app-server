@@ -57,8 +57,7 @@ var bodyParser = require("body-parser");
 var http = require("http");
 var socketIO = require("socket.io");
 var OAuth2Client = require("google-auth-library").OAuth2Client;
-// const client = new OAuth2Client(process.env.CLIENT_ID);
-var client = new OAuth2Client("627288097347-5a68p3saa38s53fqmmllk8773odutoc2.apps.googleusercontent.com");
+var client = new OAuth2Client(process.env.CLIENT_ID);
 var port = 4000;
 var app = express_1.default();
 var server = http.createServer(app);
@@ -132,8 +131,9 @@ app.post("/api/login", function (req, res) { return __awaiter(void 0, void 0, vo
                 console.log("existingUser: ", existingUser);
                 if (existingUser) {
                     res.send({ error: null, data: existingUser });
+                    return [2 /*return*/];
                 }
-                return [4 /*yield*/, users_1.addNewUser(sub_1, name_1, given_name, family_name)];
+                return [4 /*yield*/, users_1.addNewUser(sub_1, given_name, family_name, name_1)];
             case 3:
                 newUser = _a.sent();
                 console.log("newUser: ", newUser);
@@ -154,7 +154,7 @@ function verify(token) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, client.verifyIdToken({
                         idToken: token,
-                        audience: "627288097347-5a68p3saa38s53fqmmllk8773odutoc2.apps.googleusercontent.com",
+                        audience: process.env.CLIENT_ID,
                     })];
                 case 1:
                     ticket = _a.sent();
