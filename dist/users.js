@@ -36,7 +36,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteUserFromRoom = exports.addUserToRoom = exports.getUsers = exports.addNewUser = void 0;
 var utils_1 = require("./utils");
 var getUsers = function () { return __awaiter(void 0, void 0, void 0, function () {
     var users;
@@ -50,20 +49,55 @@ var getUsers = function () { return __awaiter(void 0, void 0, void 0, function (
     });
 }); };
 exports.getUsers = getUsers;
-var addNewUser = function (sub, given_name, family_name, name) { return __awaiter(void 0, void 0, void 0, function () {
+var getUserById = function (id) { return __awaiter(void 0, void 0, void 0, function () {
+    var users, user;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, getUsers()];
+            case 1:
+                users = _a.sent();
+                user = users.find(function (user) { return user.userId === id; });
+                return [2 /*return*/, user];
+        }
+    });
+}); };
+exports.getUserById = getUserById;
+var updateUser = function (userId, userName) { return __awaiter(void 0, void 0, void 0, function () {
+    var users, targetUser, index;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, getUsers()];
+            case 1:
+                users = _a.sent();
+                targetUser = users.find(function (user) { return user.userId === userId; });
+                index = users.indexOf(targetUser);
+                targetUser.userName = userName;
+                if (index !== -1) {
+                    users[index] = targetUser;
+                }
+                return [4 /*yield*/, utils_1.writeDataToJSON("dist/users.json", { users: users })];
+            case 2:
+                _a.sent();
+                return [2 /*return*/, targetUser];
+        }
+    });
+}); };
+exports.updateUser = updateUser;
+var addNewUser = function (sub, given_name, family_name, name, picture) { return __awaiter(void 0, void 0, void 0, function () {
     var users, newUser, err_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 3, , 4]);
-                return [4 /*yield*/, utils_1.getFormatedDataFromJSON("dist/users.json")];
+                return [4 /*yield*/, getUsers()];
             case 1:
-                users = (_a.sent()).users;
+                users = _a.sent();
                 newUser = {
                     userName: name,
                     firstName: given_name,
                     lastName: family_name,
                     userId: sub,
+                    profileImageURL: picture,
                     createdAt: new Date(),
                 };
                 users.push(newUser);

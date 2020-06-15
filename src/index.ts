@@ -2,8 +2,10 @@ import express, { Request, Response } from "express";
 import {
   addNewUser,
   getUsers,
+  getUserById,
   addUserToRoom,
   deleteUserFromRoom,
+  updateUser,
 } from "./users";
 import { ChatMessage, User } from "./types";
 import { addNewMessage, getMessagesForRoom } from "./messages";
@@ -24,7 +26,7 @@ app.use((req: Request, res: Response, next) => {
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content-Type, Accept"
   );
-  res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS");
   next();
 });
 
@@ -38,6 +40,27 @@ app.get("/api/users", async (req: Request, res: Response) => {
   try {
     const users: User[] = await getUsers();
     res.send({ error: null, data: users });
+  } catch (err) {
+    res.send({ error: err, data: null });
+  }
+});
+
+app.get("/api/users/:userId", async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    console.log(userId);
+    const user = await getUserById(userId);
+    res.send({ error: null, data: user });
+  } catch (err) {
+    res.send({ error: err, data: null });
+  }
+});
+
+app.put("/api/users/update", async (req: Request, res: Response) => {
+  try {
+    const { userName, userId } = req.body;
+    const updatedUser = await updateUser(userId, userName);
+    res.send({ error: null, data: updatedUser });
   } catch (err) {
     res.send({ error: err, data: null });
   }
@@ -57,7 +80,7 @@ app.post("/api/login", async (req: Request, res: Response) => {
   try {
     const id_token = req.body.accessToken;
     const payload = await verify(id_token).catch((err) => {});
-    const { sub, name, given_name, family_name } = payload;
+    const { sub, name, given_name, family_name, picture } = payload;
 
     const users = await getUsers();
     const existingUser = users.find((user: User) => user.userId === sub);
@@ -68,7 +91,13 @@ app.post("/api/login", async (req: Request, res: Response) => {
       res.send({ error: null, data: existingUser });
       return;
     }
-    const newUser = await addNewUser(sub, given_name, family_name, name);
+    const newUser = await addNewUser(
+      sub,
+      given_name,
+      family_name,
+      name,
+      picture
+    );
     console.log("newUser: ", newUser);
     res.send({ error: null, data: newUser });
   } catch (err) {

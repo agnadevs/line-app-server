@@ -65,7 +65,7 @@ var io = socketIO(server);
 app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "http://localhost:3000");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS");
     next();
 });
 app.use(express_1.default.json());
@@ -91,8 +91,49 @@ app.get("/api/users", function (req, res) { return __awaiter(void 0, void 0, voi
         }
     });
 }); });
+app.get("/api/users/:userId", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var userId, user, err_2;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 2, , 3]);
+                userId = req.params.userId;
+                console.log(userId);
+                return [4 /*yield*/, users_1.getUserById(userId)];
+            case 1:
+                user = _a.sent();
+                res.send({ error: null, data: user });
+                return [3 /*break*/, 3];
+            case 2:
+                err_2 = _a.sent();
+                res.send({ error: err_2, data: null });
+                return [3 /*break*/, 3];
+            case 3: return [2 /*return*/];
+        }
+    });
+}); });
+app.put("/api/users/update", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var _a, userName, userId, updatedUser, err_3;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
+            case 0:
+                _b.trys.push([0, 2, , 3]);
+                _a = req.body, userName = _a.userName, userId = _a.userId;
+                return [4 /*yield*/, users_1.updateUser(userId, userName)];
+            case 1:
+                updatedUser = _b.sent();
+                res.send({ error: null, data: updatedUser });
+                return [3 /*break*/, 3];
+            case 2:
+                err_3 = _b.sent();
+                res.send({ error: err_3, data: null });
+                return [3 /*break*/, 3];
+            case 3: return [2 /*return*/];
+        }
+    });
+}); });
 app.get("/api/chat/:room", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var room, history_1, err_2;
+    var room, history_1, err_4;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -106,15 +147,15 @@ app.get("/api/chat/:room", function (req, res) { return __awaiter(void 0, void 0
                 res.send({ error: null, data: history_1 });
                 return [3 /*break*/, 4];
             case 3:
-                err_2 = _a.sent();
-                res.send({ error: err_2, data: null });
+                err_4 = _a.sent();
+                res.send({ error: err_4, data: null });
                 return [3 /*break*/, 4];
             case 4: return [2 /*return*/];
         }
     });
 }); });
 app.post("/api/login", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var id_token, payload, sub_1, name_1, given_name, family_name, users, existingUser, newUser, err_3;
+    var id_token, payload, sub_1, name_1, given_name, family_name, picture, users, existingUser, newUser, err_5;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -123,7 +164,7 @@ app.post("/api/login", function (req, res) { return __awaiter(void 0, void 0, vo
                 return [4 /*yield*/, verify(id_token).catch(function (err) { })];
             case 1:
                 payload = _a.sent();
-                sub_1 = payload.sub, name_1 = payload.name, given_name = payload.given_name, family_name = payload.family_name;
+                sub_1 = payload.sub, name_1 = payload.name, given_name = payload.given_name, family_name = payload.family_name, picture = payload.picture;
                 return [4 /*yield*/, users_1.getUsers()];
             case 2:
                 users = _a.sent();
@@ -133,15 +174,15 @@ app.post("/api/login", function (req, res) { return __awaiter(void 0, void 0, vo
                     res.send({ error: null, data: existingUser });
                     return [2 /*return*/];
                 }
-                return [4 /*yield*/, users_1.addNewUser(sub_1, given_name, family_name, name_1)];
+                return [4 /*yield*/, users_1.addNewUser(sub_1, given_name, family_name, name_1, picture)];
             case 3:
                 newUser = _a.sent();
                 console.log("newUser: ", newUser);
                 res.send({ error: null, data: newUser });
                 return [3 /*break*/, 5];
             case 4:
-                err_3 = _a.sent();
-                res.send({ error: err_3, data: null });
+                err_5 = _a.sent();
+                res.send({ error: err_5, data: null });
                 return [3 /*break*/, 5];
             case 5: return [2 /*return*/];
         }

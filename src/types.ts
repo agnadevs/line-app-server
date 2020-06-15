@@ -3,6 +3,7 @@ export type User = {
   firstName?: string;
   lastName?: string;
   userId: string;
+  profileImageURL?: string;
   createdAt?: string;
   socketId?: string;
 };

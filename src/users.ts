@@ -6,20 +6,40 @@ const getUsers = async () => {
   return users;
 };
 
+const getUserById = async (id: string) => {
+  const users = await getUsers();
+  const user = users.find((user: User) => user.userId === id);
+  return user;
+};
+
+const updateUser = async (userId: string, userName: string) => {
+  const users = await getUsers();
+  const targetUser = users.find((user: User) => user.userId === userId);
+  const index = users.indexOf(targetUser);
+  targetUser.userName = userName;
+  if (index !== -1) {
+    users[index] = targetUser;
+  }
+  await writeDataToJSON("dist/users.json", { users });
+
+  return targetUser;
+};
+
 const addNewUser = async (
   sub: string,
   given_name: string,
   family_name: string,
-  name: string
+  name: string,
+  picture: string
 ) => {
   try {
-    const { users } = await getFormatedDataFromJSON("dist/users.json");
-
+    const users = await getUsers();
     const newUser = {
       userName: name,
       firstName: given_name,
       lastName: family_name,
       userId: sub,
+      profileImageURL: picture,
       createdAt: new Date(),
     };
     users.push(newUser);
@@ -73,4 +93,11 @@ const deleteUserFromRoom = async (user: User, room: string) => {
   }
 };
 
-export { addNewUser, getUsers, addUserToRoom, deleteUserFromRoom };
+export {
+  addNewUser,
+  getUsers,
+  getUserById,
+  addUserToRoom,
+  deleteUserFromRoom,
+  updateUser,
+};
