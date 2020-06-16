@@ -36,6 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.updateUser = exports.deleteUserFromRoom = exports.addUserToRoom = exports.getUserById = exports.getUsers = exports.addNewUser = void 0;
 var utils_1 = require("./utils");
 var getUsers = function () { return __awaiter(void 0, void 0, void 0, function () {
     var users;
@@ -62,7 +63,35 @@ var getUserById = function (id) { return __awaiter(void 0, void 0, void 0, funct
     });
 }); };
 exports.getUserById = getUserById;
-var updateUser = function (userId, userName) { return __awaiter(void 0, void 0, void 0, function () {
+var updateUser = function (type, userObj) { return __awaiter(void 0, void 0, void 0, function () {
+    var users, targetUser, index;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, getUsers()];
+            case 1:
+                users = _a.sent();
+                targetUser = users.find(function (user) { return user.userId === userObj.userId; });
+                index = users.indexOf(targetUser);
+                switch (type) {
+                    case "USERNAME":
+                        targetUser.userName = userObj.userName;
+                        break;
+                    case "IMAGE":
+                        targetUser.profileImageURL = userObj.profileImageURL;
+                        break;
+                }
+                if (index !== -1) {
+                    users[index] = targetUser;
+                }
+                return [4 /*yield*/, utils_1.writeDataToJSON("dist/users.json", { users: users })];
+            case 2:
+                _a.sent();
+                return [2 /*return*/, targetUser];
+        }
+    });
+}); };
+exports.updateUser = updateUser;
+var updateUserOld = function (userId, userName) { return __awaiter(void 0, void 0, void 0, function () {
     var users, targetUser, index;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -82,7 +111,6 @@ var updateUser = function (userId, userName) { return __awaiter(void 0, void 0, 
         }
     });
 }); };
-exports.updateUser = updateUser;
 var addNewUser = function (sub, given_name, family_name, name, picture) { return __awaiter(void 0, void 0, void 0, function () {
     var users, newUser, err_1;
     return __generator(this, function (_a) {

@@ -48,7 +48,6 @@ app.get("/api/users", async (req: Request, res: Response) => {
 app.get("/api/users/:userId", async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
-    console.log(userId);
     const user = await getUserById(userId);
     res.send({ error: null, data: user });
   } catch (err) {
@@ -58,8 +57,8 @@ app.get("/api/users/:userId", async (req: Request, res: Response) => {
 
 app.put("/api/users/update", async (req: Request, res: Response) => {
   try {
-    const { userName, userId } = req.body;
-    const updatedUser = await updateUser(userId, userName);
+    const data = req.body;
+    const updatedUser = await updateUser("USERNAME", data);
     res.send({ error: null, data: updatedUser });
   } catch (err) {
     res.send({ error: err, data: null });
@@ -85,10 +84,14 @@ app.post("/api/login", async (req: Request, res: Response) => {
     const users = await getUsers();
     const existingUser = users.find((user: User) => user.userId === sub);
 
-    console.log("existingUser: ", existingUser);
-
     if (existingUser) {
-      res.send({ error: null, data: existingUser });
+      if (existingUser.profileImageURL === picture) {
+        res.send({ error: null, data: existingUser });
+        return;
+      }
+      existingUser.profileImageURL = picture;
+      const updatedUser = await updateUser("IMAGE", existingUser);
+      res.send({ error: null, data: updatedUser });
       return;
     }
     const newUser = await addNewUser(
@@ -98,7 +101,6 @@ app.post("/api/login", async (req: Request, res: Response) => {
       name,
       picture
     );
-    console.log("newUser: ", newUser);
     res.send({ error: null, data: newUser });
   } catch (err) {
     res.send({ error: err, data: null });

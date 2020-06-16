@@ -12,7 +12,34 @@ const getUserById = async (id: string) => {
   return user;
 };
 
-const updateUser = async (userId: string, userName: string) => {
+type UpdateUser = {
+  userId: string;
+  userName?:string;
+  profileImageURL?:string;
+}
+
+const updateUser = async (type: string, userObj: UpdateUser) => {
+  const users = await getUsers();
+  const targetUser = users.find((user: User) => user.userId === userObj.userId);
+  const index = users.indexOf(targetUser);
+  switch (type) {
+    case "USERNAME":
+      targetUser.userName = userObj.userName;
+      break;
+    case "IMAGE":
+      targetUser.profileImageURL = userObj.profileImageURL;
+      break;
+  }
+  if (index !== -1) {
+    users[index] = targetUser;
+  }
+
+  await writeDataToJSON("dist/users.json", { users });
+
+  return targetUser;
+}
+
+const updateUserOld = async (userId: string, userName: string) => {
   const users = await getUsers();
   const targetUser = users.find((user: User) => user.userId === userId);
   const index = users.indexOf(targetUser);

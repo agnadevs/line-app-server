@@ -98,7 +98,6 @@ app.get("/api/users/:userId", function (req, res) { return __awaiter(void 0, voi
             case 0:
                 _a.trys.push([0, 2, , 3]);
                 userId = req.params.userId;
-                console.log(userId);
                 return [4 /*yield*/, users_1.getUserById(userId)];
             case 1:
                 user = _a.sent();
@@ -113,19 +112,19 @@ app.get("/api/users/:userId", function (req, res) { return __awaiter(void 0, voi
     });
 }); });
 app.put("/api/users/update", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, userName, userId, updatedUser, err_3;
-    return __generator(this, function (_b) {
-        switch (_b.label) {
+    var data, updatedUser, err_3;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
             case 0:
-                _b.trys.push([0, 2, , 3]);
-                _a = req.body, userName = _a.userName, userId = _a.userId;
-                return [4 /*yield*/, users_1.updateUser(userId, userName)];
+                _a.trys.push([0, 2, , 3]);
+                data = req.body;
+                return [4 /*yield*/, users_1.updateUser("USERNAME", data)];
             case 1:
-                updatedUser = _b.sent();
+                updatedUser = _a.sent();
                 res.send({ error: null, data: updatedUser });
                 return [3 /*break*/, 3];
             case 2:
-                err_3 = _b.sent();
+                err_3 = _a.sent();
                 res.send({ error: err_3, data: null });
                 return [3 /*break*/, 3];
             case 3: return [2 /*return*/];
@@ -155,11 +154,11 @@ app.get("/api/chat/:room", function (req, res) { return __awaiter(void 0, void 0
     });
 }); });
 app.post("/api/login", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var id_token, payload, sub_1, name_1, given_name, family_name, picture, users, existingUser, newUser, err_5;
+    var id_token, payload, sub_1, name_1, given_name, family_name, picture, users, existingUser, updatedUser, newUser, err_5;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                _a.trys.push([0, 4, , 5]);
+                _a.trys.push([0, 6, , 7]);
                 id_token = req.body.accessToken;
                 return [4 /*yield*/, verify(id_token).catch(function (err) { })];
             case 1:
@@ -169,22 +168,27 @@ app.post("/api/login", function (req, res) { return __awaiter(void 0, void 0, vo
             case 2:
                 users = _a.sent();
                 existingUser = users.find(function (user) { return user.userId === sub_1; });
-                console.log("existingUser: ", existingUser);
-                if (existingUser) {
+                if (!existingUser) return [3 /*break*/, 4];
+                if (existingUser.profileImageURL === picture) {
                     res.send({ error: null, data: existingUser });
                     return [2 /*return*/];
                 }
-                return [4 /*yield*/, users_1.addNewUser(sub_1, given_name, family_name, name_1, picture)];
+                existingUser.profileImageURL = picture;
+                return [4 /*yield*/, users_1.updateUser("IMAGE", existingUser)];
             case 3:
+                updatedUser = _a.sent();
+                res.send({ error: null, data: updatedUser });
+                return [2 /*return*/];
+            case 4: return [4 /*yield*/, users_1.addNewUser(sub_1, given_name, family_name, name_1, picture)];
+            case 5:
                 newUser = _a.sent();
-                console.log("newUser: ", newUser);
                 res.send({ error: null, data: newUser });
-                return [3 /*break*/, 5];
-            case 4:
+                return [3 /*break*/, 7];
+            case 6:
                 err_5 = _a.sent();
                 res.send({ error: err_5, data: null });
-                return [3 /*break*/, 5];
-            case 5: return [2 /*return*/];
+                return [3 /*break*/, 7];
+            case 7: return [2 /*return*/];
         }
     });
 }); });
