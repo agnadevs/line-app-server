@@ -1,24 +1,16 @@
 import express, { Request, Response } from "express";
-import {
-  addNewUser,
-  getUsers,
-  getUserById,
-  addUserToRoom,
-  deleteUserFromRoom,
-  updateUser,
-} from "./users";
-import { ChatMessage, User } from "./types";
-import { addNewMessage, getMessagesForRoom } from "./messages";
-const bodyParser = require("body-parser");
+import { addNewUser, getUsers, getUserById, updateUser } from "./users";
+import { User } from "./types";
+import { getMessagesForRoom } from "./messages";
+import { connectSocket } from "./socket";
 const http = require("http");
-const socketIO = require("socket.io");
 const { OAuth2Client } = require("google-auth-library");
 const client = new OAuth2Client(process.env.CLIENT_ID);
 const port = 4000;
 
 const app = express();
 const server = http.createServer(app);
-const io = socketIO(server);
+connectSocket(server);
 
 app.use((req: Request, res: Response, next) => {
   res.header("Access-Control-Allow-Origin", "http://localhost:3000");
@@ -115,52 +107,5 @@ async function verify(token: string) {
   const payload = ticket.getPayload();
   return payload;
 }
-
-type Data = {
-  room: string;
-  user: {
-    userName: string;
-    userId: string;
-  };
-};
-
-io.on("connection", (socket: any) => {
-  socket.on("joinRoom", async (data: Data) => {
-    const { room, user } = data;
-    socket.join(room);
-    const socketId: string = socket.id;
-    const newUser = { ...user, socketId };
-    const activeUsers = await addUserToRoom(newUser, room);
-    io.in(room).emit("activeUsersInRoom", activeUsers);
-
-    const apa = io.sockets.adapter.rooms[room];
-
-    socket.to(room).emit("messageFromServer", {
-      text: `${user.userName} has joined the room`,
-      userName: "Line manager",
-    });
-
-    socket.on("messageFromClient", async (message: ChatMessage) => {
-      const { text, userName, userId, timestamp, roomId } = message;
-      const newMessage = await addNewMessage(message, room);
-
-      io.in(room).emit("messageFromServer", newMessage);
-    });
-  });
-
-  socket.on("leaveRoom", async (data: Data) => {
-    const { room, user } = data;
-    const activeUsers = await deleteUserFromRoom(user, room);
-    io.in(room).emit("activeUsersInRoom", activeUsers);
-    socket.leave(room);
-
-    socket.to(room).emit("messageFromServer", {
-      text: `${user.userName} has left the room`,
-      userName: "Line manager",
-    });
-  });
-
-  socket.on("disconnect", (data: any) => {});
-});
 
 server.listen(port, () => console.log(`listening on port ${port}..`));
