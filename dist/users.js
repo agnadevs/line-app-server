@@ -36,8 +36,50 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateUser = exports.deleteUserFromRoom = exports.addUserToRoom = exports.getUserById = exports.getUsers = exports.addNewUser = void 0;
+exports.updateUser = exports.deleteUserFromRoom = exports.addUserToRoom = exports.getUserById = exports.getUsers = exports.getUserByGoogleId = exports.addNewUser = void 0;
 var utils_1 = require("./utils");
+var db_1 = require("./database/db");
+var queries_1 = require("./database/queries");
+// UPDATED TO USE DATABASE
+var addNewUser = function (sub, given_name, family_name, name, picture) { return __awaiter(void 0, void 0, void 0, function () {
+    var response, err_1;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 2, , 3]);
+                return [4 /*yield*/, db_1.executeQuery(queries_1.query_addUser, [
+                        sub,
+                        name,
+                        given_name,
+                        family_name,
+                        picture,
+                    ])];
+            case 1:
+                response = _a.sent();
+                return [2 /*return*/, response.rows[0]];
+            case 2:
+                err_1 = _a.sent();
+                console.log(err_1);
+                return [3 /*break*/, 3];
+            case 3: return [2 /*return*/];
+        }
+    });
+}); };
+exports.addNewUser = addNewUser;
+// UPDATED TO USE DATABASE
+var getUserByGoogleId = function (id) { return __awaiter(void 0, void 0, void 0, function () {
+    var response;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, db_1.executeQuery(queries_1.query_getUserByGoogleId, [id])];
+            case 1:
+                response = _a.sent();
+                console.log(response);
+                return [2 /*return*/, !!response.rows.length ? response.rows[0] : null];
+        }
+    });
+}); };
+exports.getUserByGoogleId = getUserByGoogleId;
 var getUsers = function () { return __awaiter(void 0, void 0, void 0, function () {
     var users;
     return __generator(this, function (_a) {
@@ -91,57 +133,6 @@ var updateUser = function (type, userObj) { return __awaiter(void 0, void 0, voi
     });
 }); };
 exports.updateUser = updateUser;
-var updateUserOld = function (userId, userName) { return __awaiter(void 0, void 0, void 0, function () {
-    var users, targetUser, index;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0: return [4 /*yield*/, getUsers()];
-            case 1:
-                users = _a.sent();
-                targetUser = users.find(function (user) { return user.userId === userId; });
-                index = users.indexOf(targetUser);
-                targetUser.userName = userName;
-                if (index !== -1) {
-                    users[index] = targetUser;
-                }
-                return [4 /*yield*/, utils_1.writeDataToJSON("dist/users.json", { users: users })];
-            case 2:
-                _a.sent();
-                return [2 /*return*/, targetUser];
-        }
-    });
-}); };
-var addNewUser = function (sub, given_name, family_name, name, picture) { return __awaiter(void 0, void 0, void 0, function () {
-    var users, newUser, err_1;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                _a.trys.push([0, 3, , 4]);
-                return [4 /*yield*/, getUsers()];
-            case 1:
-                users = _a.sent();
-                newUser = {
-                    userName: name,
-                    firstName: given_name,
-                    lastName: family_name,
-                    userId: sub,
-                    profileImageURL: picture,
-                    createdAt: new Date(),
-                };
-                users.push(newUser);
-                return [4 /*yield*/, utils_1.writeDataToJSON("dist/users.json", { users: users })];
-            case 2:
-                _a.sent();
-                return [2 /*return*/, newUser];
-            case 3:
-                err_1 = _a.sent();
-                console.log(err_1);
-                return [3 /*break*/, 4];
-            case 4: return [2 /*return*/];
-        }
-    });
-}); };
-exports.addNewUser = addNewUser;
 var addUserToRoom = function (user, room) { return __awaiter(void 0, void 0, void 0, function () {
     var rooms, existingUser, activeUsersInRoom, err_2;
     return __generator(this, function (_a) {

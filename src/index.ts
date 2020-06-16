@@ -1,5 +1,11 @@
 import express, { Request, Response } from "express";
-import { addNewUser, getUsers, getUserById, updateUser } from "./users";
+import {
+  addNewUser,
+  getUsers,
+  getUserById,
+  updateUser,
+  getUserByGoogleId,
+} from "./users";
 import { User } from "./types";
 import { getMessagesForRoom } from "./messages";
 import { connectSocket } from "./socket";
@@ -67,24 +73,36 @@ app.get("/api/chat/:room", async (req: Request, res: Response) => {
   }
 });
 
+// CURRENTLY UPDATING TO USE DATABASE
 app.post("/api/login", async (req: Request, res: Response) => {
   try {
     const id_token = req.body.accessToken;
     const payload = await verify(id_token).catch((err) => {});
     const { sub, name, given_name, family_name, picture } = payload;
 
-    const users = await getUsers();
-    const existingUser = users.find((user: User) => user.userId === sub);
+
+    /*  
+    ADD MAPPING FUNCTIONS TO SEPARATE FILE
+    TWO DIFFERENT TYPES FOR USER - MAPPED(INDEX.TS) AND RAW(USERS.TS)
+
+    const mapUser = (existingUser) => {
+      return {
+        
+      }
+    }
+    
+    */
+    const existingUser = await getUserByGoogleId(sub);
 
     if (existingUser) {
-      if (existingUser.profileImageURL === picture) {
-        res.send({ error: null, data: existingUser });
+      if (existingUser.profile_image_url === picture) {
+        res.send({ error: null, data: existingUser }); //NEED TO MAP EXISTING USER BEFORE RES.SEND BACK
         return;
       }
-      existingUser.profileImageURL = picture;
-      const updatedUser = await updateUser("IMAGE", existingUser);
-      res.send({ error: null, data: updatedUser });
-      return;
+      // existingUser.profileImageURL = picture;
+      // const updatedUser = await updateUser("IMAGE", existingUser);
+      // res.send({ error: null, data: updatedUser });
+      // return;
     }
     const newUser = await addNewUser(
       sub,

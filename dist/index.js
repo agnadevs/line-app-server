@@ -141,42 +141,41 @@ app.get("/api/chat/:room", function (req, res) { return __awaiter(void 0, void 0
         }
     });
 }); });
+// CURRENTLY UPDATING TO USE DATABASE
 app.post("/api/login", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var id_token, payload, sub_1, name_1, given_name, family_name, picture, users, existingUser, updatedUser, newUser, err_5;
+    var id_token, payload, sub, name_1, given_name, family_name, picture, existingUser, newUser, err_5;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                _a.trys.push([0, 6, , 7]);
+                _a.trys.push([0, 4, , 5]);
                 id_token = req.body.accessToken;
                 return [4 /*yield*/, verify(id_token).catch(function (err) { })];
             case 1:
                 payload = _a.sent();
-                sub_1 = payload.sub, name_1 = payload.name, given_name = payload.given_name, family_name = payload.family_name, picture = payload.picture;
-                return [4 /*yield*/, users_1.getUsers()];
+                sub = payload.sub, name_1 = payload.name, given_name = payload.given_name, family_name = payload.family_name, picture = payload.picture;
+                return [4 /*yield*/, users_1.getUserByGoogleId(sub)];
             case 2:
-                users = _a.sent();
-                existingUser = users.find(function (user) { return user.userId === sub_1; });
-                if (!existingUser) return [3 /*break*/, 4];
-                if (existingUser.profileImageURL === picture) {
-                    res.send({ error: null, data: existingUser });
-                    return [2 /*return*/];
+                existingUser = _a.sent();
+                if (existingUser) {
+                    if (existingUser.profile_image_url === picture) {
+                        res.send({ error: null, data: existingUser }); //NEED TO MAP EXISTING USER BEFORE RES.SEND BACK
+                        return [2 /*return*/];
+                    }
+                    // existingUser.profileImageURL = picture;
+                    // const updatedUser = await updateUser("IMAGE", existingUser);
+                    // res.send({ error: null, data: updatedUser });
+                    // return;
                 }
-                existingUser.profileImageURL = picture;
-                return [4 /*yield*/, users_1.updateUser("IMAGE", existingUser)];
+                return [4 /*yield*/, users_1.addNewUser(sub, given_name, family_name, name_1, picture)];
             case 3:
-                updatedUser = _a.sent();
-                res.send({ error: null, data: updatedUser });
-                return [2 /*return*/];
-            case 4: return [4 /*yield*/, users_1.addNewUser(sub_1, given_name, family_name, name_1, picture)];
-            case 5:
                 newUser = _a.sent();
                 res.send({ error: null, data: newUser });
-                return [3 /*break*/, 7];
-            case 6:
+                return [3 /*break*/, 5];
+            case 4:
                 err_5 = _a.sent();
                 res.send({ error: err_5, data: null });
-                return [3 /*break*/, 7];
-            case 7: return [2 /*return*/];
+                return [3 /*break*/, 5];
+            case 5: return [2 /*return*/];
         }
     });
 }); });

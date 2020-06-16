@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.query_getUserByGoogleId = exports.query_addUser = exports.query_getUserById = exports.query_getUsers = void 0;
+var query_getUsers = "SELECT * FROM users";
+exports.query_getUsers = query_getUsers;
+var query_getUserById = "SELECT * FROM users WHERE id = $1";
+exports.query_getUserById = query_getUserById;
+var query_getUserByGoogleId = "SELECT * FROM users WHERE google_id = $1";
+exports.query_getUserByGoogleId = query_getUserByGoogleId;
+var query_addUser = "\n    INSERT INTO users \n    (google_id, user_name, first_name, last_name, profile_image_url) \n    VALUES \n    ($1, $2, $3, $4, $5) \n    RETURNING *\n";
+exports.query_addUser = query_addUser;

@@ -1,5 +1,36 @@
 import { getFormatedDataFromJSON, writeDataToJSON } from "./utils";
+import { executeQuery } from "./database/db";
+import { query_addUser, query_getUserByGoogleId } from "./database/queries";
 import { User } from "./types";
+
+// UPDATED TO USE DATABASE
+const addNewUser = async (
+  sub: string,
+  given_name: string,
+  family_name: string,
+  name: string,
+  picture: string
+) => {
+  try {
+    const response = await executeQuery(query_addUser, [
+      sub,
+      name,
+      given_name,
+      family_name,
+      picture,
+    ]);
+    return response.rows[0];
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+// UPDATED TO USE DATABASE
+const getUserByGoogleId = async (id: string) => {
+  const response = await executeQuery(query_getUserByGoogleId, [id]);
+  console.log(response);
+  return !!response.rows.length ? response.rows[0] : null;
+};
 
 const getUsers = async () => {
   const { users } = await getFormatedDataFromJSON("dist/users.json");
@@ -14,9 +45,9 @@ const getUserById = async (id: string) => {
 
 type UpdateUser = {
   userId: string;
-  userName?:string;
-  profileImageURL?:string;
-}
+  userName?: string;
+  profileImageURL?: string;
+};
 
 const updateUser = async (type: string, userObj: UpdateUser) => {
   const users = await getUsers();
@@ -37,46 +68,6 @@ const updateUser = async (type: string, userObj: UpdateUser) => {
   await writeDataToJSON("dist/users.json", { users });
 
   return targetUser;
-}
-
-const updateUserOld = async (userId: string, userName: string) => {
-  const users = await getUsers();
-  const targetUser = users.find((user: User) => user.userId === userId);
-  const index = users.indexOf(targetUser);
-  targetUser.userName = userName;
-  if (index !== -1) {
-    users[index] = targetUser;
-  }
-  await writeDataToJSON("dist/users.json", { users });
-
-  return targetUser;
-};
-
-const addNewUser = async (
-  sub: string,
-  given_name: string,
-  family_name: string,
-  name: string,
-  picture: string
-) => {
-  try {
-    const users = await getUsers();
-    const newUser = {
-      userName: name,
-      firstName: given_name,
-      lastName: family_name,
-      userId: sub,
-      profileImageURL: picture,
-      createdAt: new Date(),
-    };
-    users.push(newUser);
-
-    await writeDataToJSON("dist/users.json", { users });
-
-    return newUser;
-  } catch (err) {
-    console.log(err);
-  }
 };
 
 const addUserToRoom = async (user: User, room: string) => {
@@ -122,6 +113,7 @@ const deleteUserFromRoom = async (user: User, room: string) => {
 
 export {
   addNewUser,
+  getUserByGoogleId,
   getUsers,
   getUserById,
   addUserToRoom,
