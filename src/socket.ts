@@ -1,5 +1,9 @@
 const socketIO = require("socket.io");
-import { addUserToRoom, deleteUserFromRoom } from "./users";
+import {
+  addUserToRoom,
+  deleteUserFromRoom,
+  getActiveUsersInRoom,
+} from "./users";
 import { addNewMessage } from "./messages";
 import { ChatMessage } from "./types";
 
@@ -11,8 +15,10 @@ export const connectSocket = (server: any) => {
       const { room, user } = data;
       socket.join(room);
       const socketId: string = socket.id;
-      const newUser = { ...user, socketId };
-      const activeUsers = await addUserToRoom(newUser, room);
+
+      await addUserToRoom(user.userId, socketId, room);
+
+      const activeUsers = await getActiveUsersInRoom(room);
       io.in(room).emit("activeUsersInRoom", activeUsers);
 
       socket.to(room).emit("messageFromServer", {
@@ -28,7 +34,10 @@ export const connectSocket = (server: any) => {
 
     socket.on("leaveRoom", async (data: Data) => {
       const { room, user } = data;
-      const activeUsers = await deleteUserFromRoom(user, room);
+
+      await deleteUserFromRoom(socket.id);
+      
+      const activeUsers = await getActiveUsersInRoom(room);
       io.in(room).emit("activeUsersInRoom", activeUsers);
       socket.leave(room);
 
@@ -38,7 +47,9 @@ export const connectSocket = (server: any) => {
       });
     });
 
-    socket.on("disconnect", (data: any) => {});
+    socket.on("disconnect", async () => {
+      //   await deleteUserFromRoom(socket.id);
+    });
   });
 };
 
@@ -46,6 +57,6 @@ type Data = {
   room: string;
   user: {
     userName: string;
-    userId: string;
+    userId: number;
   };
 };

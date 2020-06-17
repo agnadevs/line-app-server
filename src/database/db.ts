@@ -7,7 +7,10 @@ const pool = new Pool({
   },
 });
 
-export const executeQuery = async (sql: string, params: (string|number)[]) => {
+export const executeQuery = async (
+  sql: string,
+  params: (string | number)[]
+) => {
   const client = await pool.connect();
   console.log("connected");
   try {
@@ -44,7 +47,15 @@ CREATE TABLE messages (
 	created_date timestamp default current_timestamp 
 );
 
-alter table messages add foreign key (user_id) REFERENCES users(id);
+DROP TABLE IF EXISTS active_users;
+CREATE TABLE active_users (
+  id serial not null PRIMARY KEY,
+  user_id integer not null,
+  FOREIGN KEY (user_id) REFERENCES users (id),
+  socket_id varchar not null,
+  room_id varchar not null,
+	created_date timestamp default current_timestamp 
+);
 
 DROP TABLE IF EXISTS rooms;
 CREATE TABLE rooms (

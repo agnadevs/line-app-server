@@ -6,9 +6,12 @@ import {
   query_getUserById,
   query_updateUserName,
   query_updateUserProfilePicture,
+  query_addUserToRoom,
+  query_deleteUserFromRoom,
+  query_getActiveUsersInRoom,
 } from "./database/queries";
 import { mapUserFromDB } from "./mapper";
-import { User } from "./types";
+import { User, RawUser } from "./types";
 
 // UPDATED TO USE DATABASE
 const addNewUser = async (
@@ -50,45 +53,46 @@ const updateUserProfilePicture = async (id: number, pictureURL: string) => {
   return mapUserFromDB(response.rows[0]);
 };
 
-const addUserToRoom = async (user: User, room: string) => {
+const addUserToRoom = async (
+  userId: number,
+  socketId: string,
+  roomId: string
+) => {
   try {
-    const { rooms } = await getFormatedDataFromJSON("dist/rooms.json");
-    const existingUser = rooms[room].find(
-      (currentUser: User) => user.userId === currentUser.userId
-    );
-    if (!!existingUser) {
-      rooms[room].find(
-        (currentUser: User) => user.userId === currentUser.userId
-      ).socketId = user.socketId;
-    } else {
-      rooms[room].push(user);
-    }
-
-    await writeDataToJSON("dist/rooms.json", { rooms });
-
-    const activeUsersInRoom = rooms[room];
-    return activeUsersInRoom;
+    await executeQuery(query_addUserToRoom, [userId, socketId, roomId]);
+    //   const { rooms } = await getFormatedDataFromJSON("dist/rooms.json");
+    //   const existingUser = rooms[room].find(
+    //     (currentUser: User) => user.userId === currentUser.userId
+    //   );
+    //   if (!!existingUser) {
+    //     rooms[room].find(
+    //       (currentUser: User) => user.userId === currentUser.userId
+    //     ).socketId = user.socketId;
+    //   } else {
+    //     rooms[room].push(user);
+    //   }
+    //   await writeDataToJSON("dist/rooms.json", { rooms });
+    //   const activeUsersInRoom = rooms[room];
+    // return activeUsersInRoom;
   } catch (err) {
     console.log(err);
   }
 };
 
-const deleteUserFromRoom = async (user: User, room: string) => {
+const deleteUserFromRoom = async (socketId: string) => {
   try {
-    const { rooms } = await getFormatedDataFromJSON("dist/rooms.json");
-
-    const arrayWhenUserIsRemoved = rooms[room].filter((currentUser: User) => {
-      return user.userId !== currentUser.userId;
-    });
-
-    rooms[room] = arrayWhenUserIsRemoved;
-
-    await writeDataToJSON("dist/rooms.json", { rooms });
-    const activeUsersInRoom = rooms[room];
-    return activeUsersInRoom;
+    await executeQuery(query_deleteUserFromRoom, [socketId]);
   } catch (err) {
     console.log(err);
   }
+};
+
+const getActiveUsersInRoom = async (roomId: string) => {
+  const activeUsers = await executeQuery(query_getActiveUsersInRoom, [roomId]);
+  const mappedUsers = activeUsers.rows.map((user: RawUser) => {
+    return mapUserFromDB(user);
+  });
+  return mappedUsers;
 };
 
 const getUserById = async (id: number) => {
@@ -104,4 +108,5 @@ export {
   deleteUserFromRoom,
   updateUserName,
   updateUserProfilePicture,
+  getActiveUsersInRoom,
 };

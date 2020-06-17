@@ -36,8 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateUserProfilePicture = exports.updateUserName = exports.deleteUserFromRoom = exports.addUserToRoom = exports.getUserById = exports.getUserByGoogleId = exports.addNewUser = void 0;
-var utils_1 = require("./utils");
+exports.getActiveUsersInRoom = exports.updateUserProfilePicture = exports.updateUserName = exports.deleteUserFromRoom = exports.addUserToRoom = exports.getUserById = exports.getUserByGoogleId = exports.addNewUser = void 0;
 var db_1 = require("./database/db");
 var queries_1 = require("./database/queries");
 var mapper_1 = require("./mapper");
@@ -106,63 +105,59 @@ var updateUserProfilePicture = function (id, pictureURL) { return __awaiter(void
     });
 }); };
 exports.updateUserProfilePicture = updateUserProfilePicture;
-var addUserToRoom = function (user, room) { return __awaiter(void 0, void 0, void 0, function () {
-    var rooms, existingUser, activeUsersInRoom, err_2;
+var addUserToRoom = function (userId, socketId, roomId) { return __awaiter(void 0, void 0, void 0, function () {
+    var err_2;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                _a.trys.push([0, 3, , 4]);
-                return [4 /*yield*/, utils_1.getFormatedDataFromJSON("dist/rooms.json")];
+                _a.trys.push([0, 2, , 3]);
+                return [4 /*yield*/, db_1.executeQuery(queries_1.query_addUserToRoom, [userId, socketId, roomId])];
             case 1:
-                rooms = (_a.sent()).rooms;
-                existingUser = rooms[room].find(function (currentUser) { return user.userId === currentUser.userId; });
-                if (!!existingUser) {
-                    rooms[room].find(function (currentUser) { return user.userId === currentUser.userId; }).socketId = user.socketId;
-                }
-                else {
-                    rooms[room].push(user);
-                }
-                return [4 /*yield*/, utils_1.writeDataToJSON("dist/rooms.json", { rooms: rooms })];
-            case 2:
                 _a.sent();
-                activeUsersInRoom = rooms[room];
-                return [2 /*return*/, activeUsersInRoom];
-            case 3:
+                return [3 /*break*/, 3];
+            case 2:
                 err_2 = _a.sent();
                 console.log(err_2);
-                return [3 /*break*/, 4];
-            case 4: return [2 /*return*/];
+                return [3 /*break*/, 3];
+            case 3: return [2 /*return*/];
         }
     });
 }); };
 exports.addUserToRoom = addUserToRoom;
-var deleteUserFromRoom = function (user, room) { return __awaiter(void 0, void 0, void 0, function () {
-    var rooms, arrayWhenUserIsRemoved, activeUsersInRoom, err_3;
+var deleteUserFromRoom = function (socketId) { return __awaiter(void 0, void 0, void 0, function () {
+    var err_3;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                _a.trys.push([0, 3, , 4]);
-                return [4 /*yield*/, utils_1.getFormatedDataFromJSON("dist/rooms.json")];
+                _a.trys.push([0, 2, , 3]);
+                return [4 /*yield*/, db_1.executeQuery(queries_1.query_deleteUserFromRoom, [socketId])];
             case 1:
-                rooms = (_a.sent()).rooms;
-                arrayWhenUserIsRemoved = rooms[room].filter(function (currentUser) {
-                    return user.userId !== currentUser.userId;
-                });
-                rooms[room] = arrayWhenUserIsRemoved;
-                return [4 /*yield*/, utils_1.writeDataToJSON("dist/rooms.json", { rooms: rooms })];
-            case 2:
                 _a.sent();
-                activeUsersInRoom = rooms[room];
-                return [2 /*return*/, activeUsersInRoom];
-            case 3:
+                return [3 /*break*/, 3];
+            case 2:
                 err_3 = _a.sent();
                 console.log(err_3);
-                return [3 /*break*/, 4];
-            case 4: return [2 /*return*/];
+                return [3 /*break*/, 3];
+            case 3: return [2 /*return*/];
         }
     });
 }); };
 exports.deleteUserFromRoom = deleteUserFromRoom;
+var getActiveUsersInRoom = function (roomId) { return __awaiter(void 0, void 0, void 0, function () {
+    var activeUsers, mappedUsers;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, db_1.executeQuery(queries_1.query_getActiveUsersInRoom, [roomId])];
+            case 1:
+                activeUsers = _a.sent();
+                mappedUsers = activeUsers.rows.map(function (user) {
+                    return mapper_1.mapUserFromDB(user);
+                });
+                return [2 /*return*/, mappedUsers];
+        }
+    });
+}); };
+exports.getActiveUsersInRoom = getActiveUsersInRoom;
 var getUserById = function (id) { return __awaiter(void 0, void 0, void 0, function () {
     var response;
     return __generator(this, function (_a) {

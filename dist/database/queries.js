@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.query_getMessagesForRoom = exports.query_addMessage = exports.query_updateUserProfilePicture = exports.query_updateUserName = exports.query_getUserByGoogleId = exports.query_addUser = exports.query_getUserById = exports.query_getUsers = void 0;
+exports.query_getActiveUsersInRoom = exports.query_deleteUserFromRoom = exports.query_addUserToRoom = exports.query_getMessagesForRoom = exports.query_addMessage = exports.query_updateUserProfilePicture = exports.query_updateUserName = exports.query_getUserByGoogleId = exports.query_addUser = exports.query_getUserById = exports.query_getUsers = void 0;
 var query_getUsers = "SELECT * FROM users";
 exports.query_getUsers = query_getUsers;
 var query_getUserById = "SELECT * FROM users WHERE id = $1";
@@ -24,3 +24,9 @@ WHERE messages.room_id = 'react';
 */
 var query_getMessagesForRoom = "\n  SELECT messages.text, messages.user_id, messages.created_date, messages.room_id, users.user_name FROM messages\n  LEFT JOIN users\n  ON messages.user_id = users.id\n  WHERE messages.room_id = $1;\n";
 exports.query_getMessagesForRoom = query_getMessagesForRoom;
+var query_addUserToRoom = "\n  INSERT INTO active_users \n  (user_id, socket_id, room_id) \n  VALUES \n  ($1, $2, $3)\n";
+exports.query_addUserToRoom = query_addUserToRoom;
+var query_deleteUserFromRoom = "\n    DELETE FROM active_users\n    WHERE socket_id = $1;\n";
+exports.query_deleteUserFromRoom = query_deleteUserFromRoom;
+var query_getActiveUsersInRoom = "\n  SELECT \n    users.id, \n    users.user_name,\n    users.first_name,\n    users.last_name,\n    profile_image_url\n  FROM active_users\n  LEFT JOIN users\n  ON active_users.user_id = users.id\n  WHERE active_users.room_id = $1;\n";
+exports.query_getActiveUsersInRoom = query_getActiveUsersInRoom;

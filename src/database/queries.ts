@@ -53,6 +53,31 @@ const query_getMessagesForRoom = `
   WHERE messages.room_id = $1;
 `;
 
+const query_addUserToRoom = `
+  INSERT INTO active_users 
+  (user_id, socket_id, room_id) 
+  VALUES 
+  ($1, $2, $3)
+`;
+
+const query_deleteUserFromRoom = `
+    DELETE FROM active_users
+    WHERE socket_id = $1;
+`;
+
+const query_getActiveUsersInRoom = `
+  SELECT 
+    users.id, 
+    users.user_name,
+    users.first_name,
+    users.last_name,
+    profile_image_url
+  FROM active_users
+  LEFT JOIN users
+  ON active_users.user_id = users.id
+  WHERE active_users.room_id = $1;
+`;
+
 export {
   query_getUsers,
   query_getUserById,
@@ -62,4 +87,7 @@ export {
   query_updateUserProfilePicture,
   query_addMessage,
   query_getMessagesForRoom,
+  query_addUserToRoom,
+  query_deleteUserFromRoom,
+  query_getActiveUsersInRoom,
 };
