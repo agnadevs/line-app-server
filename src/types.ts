@@ -12,6 +12,21 @@ export type ChatMessage = {
   text: string;
   userName: string;
   userId: string;
-  timestamp: string;
-  roomId: string;
+};
+
+export type RawMessage = {
+  user_name: string;
+  user_id: string;
+  text: string;
+  created_date: string;
+};
+
+export type RawUser = {
+  id: number;
+  google_id: string;
+  user_name: string;
+  first_name: string;
+  last_name: string;
+  profile_image_url: string;
+  created_date: string;
 };

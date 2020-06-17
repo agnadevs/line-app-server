@@ -1,6 +1,13 @@
 import { getFormatedDataFromJSON, writeDataToJSON } from "./utils";
 import { executeQuery } from "./database/db";
-import { query_addUser, query_getUserByGoogleId } from "./database/queries";
+import {
+  query_addUser,
+  query_getUserByGoogleId,
+  query_getUserById,
+  query_updateUserName,
+  query_updateUserProfilePicture,
+} from "./database/queries";
+import { mapUserFromDB } from "./mapper";
 import { User } from "./types";
 
 // UPDATED TO USE DATABASE
@@ -19,55 +26,28 @@ const addNewUser = async (
       family_name,
       picture,
     ]);
-    return response.rows[0];
+    return mapUserFromDB(response.rows[0]);
   } catch (err) {
     console.log(err);
   }
 };
 
-// UPDATED TO USE DATABASE
 const getUserByGoogleId = async (id: string) => {
   const response = await executeQuery(query_getUserByGoogleId, [id]);
-  console.log(response);
-  return !!response.rows.length ? response.rows[0] : null;
+  return !!response.rows.length ? mapUserFromDB(response.rows[0]) : null;
 };
 
-const getUsers = async () => {
-  const { users } = await getFormatedDataFromJSON("dist/users.json");
-  return users;
+const updateUserName = async (id: number, newUserName: string) => {
+  const response = await executeQuery(query_updateUserName, [id, newUserName]);
+  return mapUserFromDB(response.rows[0]);
 };
 
-const getUserById = async (id: string) => {
-  const users = await getUsers();
-  const user = users.find((user: User) => user.userId === id);
-  return user;
-};
-
-type UpdateUser = {
-  userId: string;
-  userName?: string;
-  profileImageURL?: string;
-};
-
-const updateUser = async (type: string, userObj: UpdateUser) => {
-  const users = await getUsers();
-  const targetUser = users.find((user: User) => user.userId === userObj.userId);
-  const index = users.indexOf(targetUser);
-  switch (type) {
-    case "USERNAME":
-      targetUser.userName = userObj.userName;
-      break;
-    case "IMAGE":
-      targetUser.profileImageURL = userObj.profileImageURL;
-      break;
-  }
-  if (index !== -1) {
-    users[index] = targetUser;
-  }
-
-  await writeDataToJSON("dist/users.json", { users });
-
-  return targetUser;
+const updateUserProfilePicture = async (id: number, pictureURL: string) => {
+  const response = await executeQuery(query_updateUserProfilePicture, [
+    id,
+    pictureURL,
+  ]);
+  return mapUserFromDB(response.rows[0]);
 };
 
 const addUserToRoom = async (user: User, room: string) => {
@@ -111,12 +91,17 @@ const deleteUserFromRoom = async (user: User, room: string) => {
   }
 };
 
+const getUserById = async (id: number) => {
+  const response = await executeQuery(query_getUserById, [id]);
+  return !!response.rows.length ? response.rows[0] : null;
+};
+
 export {
   addNewUser,
   getUserByGoogleId,
-  getUsers,
   getUserById,
   addUserToRoom,
   deleteUserFromRoom,
-  updateUser,
+  updateUserName,
+  updateUserProfilePicture,
 };

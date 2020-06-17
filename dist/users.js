@@ -36,10 +36,11 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateUser = exports.deleteUserFromRoom = exports.addUserToRoom = exports.getUserById = exports.getUsers = exports.getUserByGoogleId = exports.addNewUser = void 0;
+exports.updateUserProfilePicture = exports.updateUserName = exports.deleteUserFromRoom = exports.addUserToRoom = exports.getUserById = exports.getUserByGoogleId = exports.addNewUser = void 0;
 var utils_1 = require("./utils");
 var db_1 = require("./database/db");
 var queries_1 = require("./database/queries");
+var mapper_1 = require("./mapper");
 // UPDATED TO USE DATABASE
 var addNewUser = function (sub, given_name, family_name, name, picture) { return __awaiter(void 0, void 0, void 0, function () {
     var response, err_1;
@@ -56,7 +57,7 @@ var addNewUser = function (sub, given_name, family_name, name, picture) { return
                     ])];
             case 1:
                 response = _a.sent();
-                return [2 /*return*/, response.rows[0]];
+                return [2 /*return*/, mapper_1.mapUserFromDB(response.rows[0])];
             case 2:
                 err_1 = _a.sent();
                 console.log(err_1);
@@ -66,7 +67,6 @@ var addNewUser = function (sub, given_name, family_name, name, picture) { return
     });
 }); };
 exports.addNewUser = addNewUser;
-// UPDATED TO USE DATABASE
 var getUserByGoogleId = function (id) { return __awaiter(void 0, void 0, void 0, function () {
     var response;
     return __generator(this, function (_a) {
@@ -74,65 +74,38 @@ var getUserByGoogleId = function (id) { return __awaiter(void 0, void 0, void 0,
             case 0: return [4 /*yield*/, db_1.executeQuery(queries_1.query_getUserByGoogleId, [id])];
             case 1:
                 response = _a.sent();
-                console.log(response);
-                return [2 /*return*/, !!response.rows.length ? response.rows[0] : null];
+                return [2 /*return*/, !!response.rows.length ? mapper_1.mapUserFromDB(response.rows[0]) : null];
         }
     });
 }); };
 exports.getUserByGoogleId = getUserByGoogleId;
-var getUsers = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var users;
+var updateUserName = function (id, newUserName) { return __awaiter(void 0, void 0, void 0, function () {
+    var response;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, utils_1.getFormatedDataFromJSON("dist/users.json")];
+            case 0: return [4 /*yield*/, db_1.executeQuery(queries_1.query_updateUserName, [id, newUserName])];
             case 1:
-                users = (_a.sent()).users;
-                return [2 /*return*/, users];
+                response = _a.sent();
+                return [2 /*return*/, mapper_1.mapUserFromDB(response.rows[0])];
         }
     });
 }); };
-exports.getUsers = getUsers;
-var getUserById = function (id) { return __awaiter(void 0, void 0, void 0, function () {
-    var users, user;
+exports.updateUserName = updateUserName;
+var updateUserProfilePicture = function (id, pictureURL) { return __awaiter(void 0, void 0, void 0, function () {
+    var response;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, getUsers()];
+            case 0: return [4 /*yield*/, db_1.executeQuery(queries_1.query_updateUserProfilePicture, [
+                    id,
+                    pictureURL,
+                ])];
             case 1:
-                users = _a.sent();
-                user = users.find(function (user) { return user.userId === id; });
-                return [2 /*return*/, user];
+                response = _a.sent();
+                return [2 /*return*/, mapper_1.mapUserFromDB(response.rows[0])];
         }
     });
 }); };
-exports.getUserById = getUserById;
-var updateUser = function (type, userObj) { return __awaiter(void 0, void 0, void 0, function () {
-    var users, targetUser, index;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0: return [4 /*yield*/, getUsers()];
-            case 1:
-                users = _a.sent();
-                targetUser = users.find(function (user) { return user.userId === userObj.userId; });
-                index = users.indexOf(targetUser);
-                switch (type) {
-                    case "USERNAME":
-                        targetUser.userName = userObj.userName;
-                        break;
-                    case "IMAGE":
-                        targetUser.profileImageURL = userObj.profileImageURL;
-                        break;
-                }
-                if (index !== -1) {
-                    users[index] = targetUser;
-                }
-                return [4 /*yield*/, utils_1.writeDataToJSON("dist/users.json", { users: users })];
-            case 2:
-                _a.sent();
-                return [2 /*return*/, targetUser];
-        }
-    });
-}); };
-exports.updateUser = updateUser;
+exports.updateUserProfilePicture = updateUserProfilePicture;
 var addUserToRoom = function (user, room) { return __awaiter(void 0, void 0, void 0, function () {
     var rooms, existingUser, activeUsersInRoom, err_2;
     return __generator(this, function (_a) {
@@ -190,3 +163,15 @@ var deleteUserFromRoom = function (user, room) { return __awaiter(void 0, void 0
     });
 }); };
 exports.deleteUserFromRoom = deleteUserFromRoom;
+var getUserById = function (id) { return __awaiter(void 0, void 0, void 0, function () {
+    var response;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, db_1.executeQuery(queries_1.query_getUserById, [id])];
+            case 1:
+                response = _a.sent();
+                return [2 /*return*/, !!response.rows.length ? response.rows[0] : null];
+        }
+    });
+}); };
+exports.getUserById = getUserById;

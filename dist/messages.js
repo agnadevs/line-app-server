@@ -37,40 +37,37 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getMessagesForRoom = exports.addNewMessage = void 0;
-var utils_1 = require("./utils");
-var getMessagesForRoom = function (room) { return __awaiter(void 0, void 0, void 0, function () {
-    var messages;
+var queries_1 = require("./database/queries");
+var db_1 = require("./database/db");
+var mapper_1 = require("./mapper");
+var getMessagesForRoom = function (roomId) { return __awaiter(void 0, void 0, void 0, function () {
+    var messages, mappedMessages;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, utils_1.getFormatedDataFromJSON("dist/chatHistory.json")];
+            case 0: return [4 /*yield*/, db_1.executeQuery(queries_1.query_getMessagesForRoom, [roomId])];
             case 1:
-                messages = (_a.sent()).messages;
-                return [2 /*return*/, messages.filter(function (msg) { return msg.roomId === room; })];
+                messages = _a.sent();
+                mappedMessages = messages.rows.map(function (message) {
+                    return mapper_1.mapMessageFromDB(message);
+                });
+                return [2 /*return*/, mappedMessages];
         }
     });
 }); };
 exports.getMessagesForRoom = getMessagesForRoom;
 var addNewMessage = function (message, room) { return __awaiter(void 0, void 0, void 0, function () {
-    var messages, newMessage, err_1;
+    var userId, text, message_1, err_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                _a.trys.push([0, 3, , 4]);
-                return [4 /*yield*/, utils_1.getFormatedDataFromJSON("dist/chatHistory.json")];
+                userId = message.userId, text = message.text;
+                _a.label = 1;
             case 1:
-                messages = (_a.sent()).messages;
-                newMessage = {
-                    text: message.text,
-                    userName: message.userName,
-                    userId: message.userId,
-                    timestamp: message.timestamp,
-                    roomId: room
-                };
-                messages.push(newMessage);
-                return [4 /*yield*/, utils_1.writeDataToJSON("dist/chatHistory.json", { messages: messages })];
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, db_1.executeQuery(queries_1.query_addMessage, [userId, room, text])];
             case 2:
-                _a.sent();
-                return [2 /*return*/, message];
+                message_1 = _a.sent();
+                return [2 /*return*/, mapper_1.mapMessageFromDB(message_1.rows[0])];
             case 3:
                 err_1 = _a.sent();
                 console.log(err_1);

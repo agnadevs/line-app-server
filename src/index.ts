@@ -1,10 +1,9 @@
 import express, { Request, Response } from "express";
 import {
   addNewUser,
-  getUsers,
-  getUserById,
-  updateUser,
   getUserByGoogleId,
+  updateUserName,
+  updateUserProfilePicture,
 } from "./users";
 import { User } from "./types";
 import { getMessagesForRoom } from "./messages";
@@ -34,29 +33,10 @@ app.get("/api/healthCheck", (req: Request, res: Response) => {
   res.send({ message: "Gris" });
 });
 
-app.get("/api/users", async (req: Request, res: Response) => {
-  try {
-    const users: User[] = await getUsers();
-    res.send({ error: null, data: users });
-  } catch (err) {
-    res.send({ error: err, data: null });
-  }
-});
-
-app.get("/api/users/:userId", async (req: Request, res: Response) => {
-  try {
-    const { userId } = req.params;
-    const user = await getUserById(userId);
-    res.send({ error: null, data: user });
-  } catch (err) {
-    res.send({ error: err, data: null });
-  }
-});
-
 app.put("/api/users/update", async (req: Request, res: Response) => {
   try {
-    const data = req.body;
-    const updatedUser = await updateUser("USERNAME", data);
+    const { userName, userId } = req.body;
+    const updatedUser = await updateUserName(userId, userName);
     res.send({ error: null, data: updatedUser });
   } catch (err) {
     res.send({ error: err, data: null });
@@ -80,7 +60,6 @@ app.post("/api/login", async (req: Request, res: Response) => {
     const payload = await verify(id_token).catch((err) => {});
     const { sub, name, given_name, family_name, picture } = payload;
 
-
     /*  
     ADD MAPPING FUNCTIONS TO SEPARATE FILE
     TWO DIFFERENT TYPES FOR USER - MAPPED(INDEX.TS) AND RAW(USERS.TS)
@@ -93,16 +72,15 @@ app.post("/api/login", async (req: Request, res: Response) => {
     
     */
     const existingUser = await getUserByGoogleId(sub);
-
     if (existingUser) {
-      if (existingUser.profile_image_url === picture) {
+      if (existingUser.profileImageURL === picture) {
         res.send({ error: null, data: existingUser }); //NEED TO MAP EXISTING USER BEFORE RES.SEND BACK
         return;
       }
-      // existingUser.profileImageURL = picture;
-      // const updatedUser = await updateUser("IMAGE", existingUser);
-      // res.send({ error: null, data: updatedUser });
-      // return;
+      const { userId } = existingUser;
+      const updatedUser = await updateUserProfilePicture(userId, picture);
+      res.send({ error: null, data: updatedUser });
+      return;
     }
     const newUser = await addNewUser(
       sub,

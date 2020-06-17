@@ -1,38 +1,25 @@
-import { v4 as uuidv4 } from "uuid";
-import { getFormatedDataFromJSON, writeDataToJSON } from "./utils";
+import { query_addMessage, query_getMessagesForRoom } from "./database/queries";
+import { executeQuery } from "./database/db";
+import { mapMessageFromDB } from "./mapper";
+import { RawMessage, ChatMessage } from "./types";
 
-type Message = {
-  text: string;
-  userName: string;
-  userId: string;
-  timestamp: string;
-  roomId: string;
-}
+const getMessagesForRoom = async (roomId: string) => {
+  const messages = await executeQuery(query_getMessagesForRoom, [roomId]);
+  const mappedMessages = messages.rows.map((message: RawMessage) => {
+    return mapMessageFromDB(message);
+  });
 
-const getMessagesForRoom = async (room: string) => {
-  const { messages } = await getFormatedDataFromJSON("dist/chatHistory.json");
-  return messages.filter((msg: Message) => msg.roomId === room);
-}
+  return mappedMessages;
+};
 
-const addNewMessage = async (message: Message, room: string) => {
+const addNewMessage = async (message: ChatMessage, room: string) => {
+  const { userId, text } = message;
   try {
-    const { messages } = await getFormatedDataFromJSON("dist/chatHistory.json");
-
-    const newMessage = {
-      text: message.text,
-      userName: message.userName,
-      userId: message.userId,
-      timestamp: message.timestamp,
-      roomId: room
-    };
-    messages.push(newMessage);
-
-    await writeDataToJSON("dist/chatHistory.json", { messages });
-
-    return message;
+    const message = await executeQuery(query_addMessage, [userId, room, text]);
+    return mapMessageFromDB(message.rows[0]);
   } catch (err) {
     console.log(err);
   }
 };
 
-export {addNewMessage, getMessagesForRoom}
+export { addNewMessage, getMessagesForRoom };
