@@ -4,22 +4,22 @@ const query_getUserById = `SELECT * FROM users WHERE id = $1`;
 const query_getUserByGoogleId = `SELECT * FROM users WHERE google_id = $1`;
 
 const query_addUser = `
-    INSERT INTO users 
-    (google_id, user_name, first_name, last_name, profile_image_url) 
-    VALUES 
-    ($1, $2, $3, $4, $5) 
+    INSERT INTO users
+    (google_id, user_name, first_name, last_name, profile_image_url)
+    VALUES
+    ($1, $2, $3, $4, $5)
     RETURNING *;
 `;
 
 const query_updateUserName = `
-    UPDATE users 
-    SET user_name = $2 
+    UPDATE users
+    SET user_name = $2
     WHERE id = $1
     RETURNING *;
 `;
 
 const query_updateUserProfilePicture = `
-  UPDATE users 
+  UPDATE users
   SET user_name = $2
   WHERE id = $1
   RETURNING *;
@@ -27,9 +27,9 @@ const query_updateUserProfilePicture = `
 
 const query_addMessage = `
   WITH insertedMessage AS (
-    INSERT INTO messages 
-    (user_id, room_id, text) 
-    VALUES 
+    INSERT INTO messages
+    (user_id, room_id, text)
+    VALUES
     ($1, $2, $3)
     RETURNING *
   )
@@ -46,24 +46,24 @@ const query_getMessagesForRoom = `
 `;
 
 const query_addUserToRoom = `
-  INSERT INTO active_users 
-  (user_id, socket_id, room_id) 
-  VALUES 
+  INSERT INTO active_users
+  (user_id, socket_id, room_id)
+  VALUES
   ($1, $2, $3)
 `;
 
 const query_getOneUserFromRoom = `
-  SELECT * from active_users 
-  WHERE user_id=$1 
+  SELECT * from active_users
+  WHERE user_id=$1
   AND room_id=$2;
-`
+`;
 
 const query_updateOneUserInRoom = `
-  UPDATE active_users 
-  SET socket_id=$2 
-  WHERE user_id=$1 
+  UPDATE active_users
+  SET socket_id=$2
+  WHERE user_id=$1
   AND room_id=$3;
-`
+`;
 
 const query_deleteUserFromRoom = `
     DELETE FROM active_users
@@ -71,8 +71,8 @@ const query_deleteUserFromRoom = `
 `;
 
 const query_getActiveUsersInRoom = `
-  SELECT 
-    users.id, 
+  SELECT
+    users.id,
     users.user_name,
     users.first_name,
     users.last_name,
@@ -85,7 +85,7 @@ const query_getActiveUsersInRoom = `
 
 const query_getSocketIds = `
     SELECT socket_id FROM active_users;
-`
+`;
 
 export {
   query_getUsers,
@@ -101,5 +101,5 @@ export {
   query_getActiveUsersInRoom,
   query_getOneUserFromRoom,
   query_updateOneUserInRoom,
-  query_getSocketIds
+  query_getSocketIds,
 };

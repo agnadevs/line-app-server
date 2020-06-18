@@ -36,7 +36,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.executeQuery = void 0;
 var Pool = require("pg").Pool;
 var pool = new Pool({
     connectionString: process.env.DATABASE_URL,

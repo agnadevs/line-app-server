@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.mapUserFromDB = exports.mapMessageFromDB = void 0;
 var mapMessageFromDB = function (messageObj) {
     return {
         userId: messageObj.user_id,

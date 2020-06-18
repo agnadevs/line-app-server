@@ -11,12 +11,11 @@ import {
   query_getActiveUsersInRoom,
   query_getOneUserFromRoom,
   query_updateOneUserInRoom,
-  query_getSocketIds
+  query_getSocketIds,
 } from "./database/queries";
 import { mapUserFromDB } from "./mapper";
 import { User, RawUser } from "./types";
 
-// UPDATED TO USE DATABASE
 const addNewUser = async (
   sub: string,
   given_name: string,
@@ -66,7 +65,7 @@ const addUserToRoom = async (
       userId,
       roomId,
     ]);
-    if (!!userExists.rows) {
+    if (!!userExists.rows.length) {
       await executeQuery(query_updateOneUserInRoom, [userId, socketId, roomId]);
       return;
     }
@@ -77,9 +76,15 @@ const addUserToRoom = async (
 };
 
 const getAllSocketIds = async () => {
-  const socketIdsInDB = await executeQuery(query_getSocketIds, [])
-  console.log(socketIdsInDB)
-}
+  try {
+    const socketIdsInDb = await executeQuery(query_getSocketIds, []);
+    return socketIdsInDb.rows.map((row: { socket_id: string }) => {
+      return row.socket_id;
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
 
 const deleteUserFromRoom = async (socketId: string) => {
   try {
@@ -97,6 +102,18 @@ const getActiveUsersInRoom = async (roomId: string) => {
   return mappedUsers;
 };
 
+const removeInactiveSockets = async (
+  activeSockets: string[],
+  databaseSockets: string[]
+) => {
+  databaseSockets.forEach(async (socketId) => {
+    if (!activeSockets.includes(socketId)) {
+      await executeQuery(query_deleteUserFromRoom, [socketId]);
+      console.info(`Removed inactive socket: '${socketId}' at: ${new Date()}`);
+    }
+  });
+};
+
 const getUserById = async (id: number) => {
   const response = await executeQuery(query_getUserById, [id]);
   return !!response.rows.length ? response.rows[0] : null;
@@ -111,4 +128,6 @@ export {
   updateUserName,
   updateUserProfilePicture,
   getActiveUsersInRoom,
+  getAllSocketIds,
+  removeInactiveSockets,
 };

@@ -36,7 +36,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getMessagesForRoom = exports.addNewMessage = void 0;
 var queries_1 = require("./database/queries");
 var db_1 = require("./database/db");
 var mapper_1 = require("./mapper");

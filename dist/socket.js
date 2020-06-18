@@ -36,7 +36,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.connectSocket = void 0;
 var socketIO = require("socket.io");
 var users_1 = require("./users");
 var messages_1 = require("./messages");
@@ -109,10 +108,20 @@ exports.connectSocket = function (server) {
         }); });
     });
     function getActiveClients() {
-        io.of("/").clients(function (error, clients) {
-            if (error)
-                throw error;
-            console.log(clients);
+        return __awaiter(this, void 0, void 0, function () {
+            var result;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, io.of("/").clients(function (error, clients) {
+                            if (error)
+                                throw error;
+                            result = clients;
+                        })];
+                    case 1:
+                        _a.sent();
+                        return [2 /*return*/, result];
+                }
+            });
         });
     }
     return { getActiveClients: getActiveClients };

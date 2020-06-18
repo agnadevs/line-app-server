@@ -49,11 +49,13 @@ export const connectSocket = (server: any) => {
       await deleteUserFromRoom(socket.id);
     });
   });
-  function getActiveClients() {
-    io.of("/").clients((error: any, clients: any) => {
+  async function getActiveClients() {
+    let result: any;
+    await io.of("/").clients((error: any, clients: any) => {
       if (error) throw error;
-      console.log(clients);
+      result = clients;
     });
+    return result;
   }
 
   return { getActiveClients };

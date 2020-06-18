@@ -51,11 +51,23 @@ var io = require("socket.io")();
 var app = express_1.default();
 var server = http.createServer(app);
 var getActiveClients = socket_1.connectSocket(server).getActiveClients;
-// setInterval(() => {
-//   const socketIds = getActiveClients();
-//   getAllSocketIds
-// }, 3000);
-// connectedSocket;
+setInterval(function () { return __awaiter(void 0, void 0, void 0, function () {
+    var activeSocketIds, databaseSocketIds;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, getActiveClients()];
+            case 1:
+                activeSocketIds = _a.sent();
+                return [4 /*yield*/, users_1.getAllSocketIds()];
+            case 2:
+                databaseSocketIds = _a.sent();
+                return [4 /*yield*/, users_1.removeInactiveSockets(activeSocketIds, databaseSocketIds)];
+            case 3:
+                _a.sent();
+                return [2 /*return*/];
+        }
+    });
+}); }, 300000);
 app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "http://localhost:3000");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
@@ -108,7 +120,6 @@ app.get("/api/chat/:room", function (req, res) { return __awaiter(void 0, void 0
         }
     });
 }); });
-// CURRENTLY UPDATING TO USE DATABASE
 app.post("/api/login", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var id_token, payload, sub, name_1, given_name, family_name, picture, existingUser, userId, updatedUser, newUser, err_3;
     return __generator(this, function (_a) {
@@ -125,7 +136,7 @@ app.post("/api/login", function (req, res) { return __awaiter(void 0, void 0, vo
                 existingUser = _a.sent();
                 if (!existingUser) return [3 /*break*/, 4];
                 if (existingUser.profileImageURL === picture) {
-                    res.send({ error: null, data: existingUser }); //NEED TO MAP EXISTING USER BEFORE RES.SEND BACK
+                    res.send({ error: null, data: existingUser });
                     return [2 /*return*/];
                 }
                 userId = existingUser.userId;

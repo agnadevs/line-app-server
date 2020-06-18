@@ -4,6 +4,8 @@ import {
   getUserByGoogleId,
   updateUserName,
   updateUserProfilePicture,
+  getAllSocketIds,
+  removeInactiveSockets,
 } from "./users";
 import { User } from "./types";
 import { getMessagesForRoom } from "./messages";
@@ -18,11 +20,11 @@ const app = express();
 const server = http.createServer(app);
 const { getActiveClients } = connectSocket(server);
 
-// setInterval(() => {
-//   const socketIds = getActiveClients();
-//   getAllSocketIds
-// }, 3000);
-// connectedSocket;
+setInterval(async () => {
+  const activeSocketIds = await getActiveClients();
+  const databaseSocketIds = await getAllSocketIds();
+  await removeInactiveSockets(activeSocketIds, databaseSocketIds);
+}, 300000);
 
 app.use((req: Request, res: Response, next) => {
   res.header("Access-Control-Allow-Origin", "http://localhost:3000");
@@ -60,28 +62,16 @@ app.get("/api/chat/:room", async (req: Request, res: Response) => {
   }
 });
 
-// CURRENTLY UPDATING TO USE DATABASE
 app.post("/api/login", async (req: Request, res: Response) => {
   try {
     const id_token = req.body.accessToken;
     const payload = await verify(id_token).catch((err) => {});
     const { sub, name, given_name, family_name, picture } = payload;
 
-    /*  
-    ADD MAPPING FUNCTIONS TO SEPARATE FILE
-    TWO DIFFERENT TYPES FOR USER - MAPPED(INDEX.TS) AND RAW(USERS.TS)
-
-    const mapUser = (existingUser) => {
-      return {
-        
-      }
-    }
-    
-    */
     const existingUser = await getUserByGoogleId(sub);
     if (existingUser) {
       if (existingUser.profileImageURL === picture) {
-        res.send({ error: null, data: existingUser }); //NEED TO MAP EXISTING USER BEFORE RES.SEND BACK
+        res.send({ error: null, data: existingUser });
         return;
       }
       const { userId } = existingUser;

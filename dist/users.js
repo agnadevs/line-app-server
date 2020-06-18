@@ -36,11 +36,9 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getActiveUsersInRoom = exports.updateUserProfilePicture = exports.updateUserName = exports.deleteUserFromRoom = exports.addUserToRoom = exports.getUserById = exports.getUserByGoogleId = exports.addNewUser = void 0;
 var db_1 = require("./database/db");
 var queries_1 = require("./database/queries");
 var mapper_1 = require("./mapper");
-// UPDATED TO USE DATABASE
 var addNewUser = function (sub, given_name, family_name, name, picture) { return __awaiter(void 0, void 0, void 0, function () {
     var response, err_1;
     return __generator(this, function (_a) {
@@ -117,7 +115,7 @@ var addUserToRoom = function (userId, socketId, roomId) { return __awaiter(void 
                     ])];
             case 1:
                 userExists = _a.sent();
-                if (!!!userExists.rows) return [3 /*break*/, 3];
+                if (!!!userExists.rows.length) return [3 /*break*/, 3];
                 return [4 /*yield*/, db_1.executeQuery(queries_1.query_updateOneUserInRoom, [userId, socketId, roomId])];
             case 2:
                 _a.sent();
@@ -136,19 +134,28 @@ var addUserToRoom = function (userId, socketId, roomId) { return __awaiter(void 
 }); };
 exports.addUserToRoom = addUserToRoom;
 var getAllSocketIds = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var socketIdsInDB;
+    var socketIdsInDb, err_3;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, db_1.executeQuery(queries_1.query_getSocketIds, [])];
+            case 0:
+                _a.trys.push([0, 2, , 3]);
+                return [4 /*yield*/, db_1.executeQuery(queries_1.query_getSocketIds, [])];
             case 1:
-                socketIdsInDB = _a.sent();
-                console.log(socketIdsInDB);
-                return [2 /*return*/];
+                socketIdsInDb = _a.sent();
+                return [2 /*return*/, socketIdsInDb.rows.map(function (row) {
+                        return row.socket_id;
+                    })];
+            case 2:
+                err_3 = _a.sent();
+                console.log(err_3);
+                return [3 /*break*/, 3];
+            case 3: return [2 /*return*/];
         }
     });
 }); };
+exports.getAllSocketIds = getAllSocketIds;
 var deleteUserFromRoom = function (socketId) { return __awaiter(void 0, void 0, void 0, function () {
-    var err_3;
+    var err_4;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -158,8 +165,8 @@ var deleteUserFromRoom = function (socketId) { return __awaiter(void 0, void 0, 
                 _a.sent();
                 return [3 /*break*/, 3];
             case 2:
-                err_3 = _a.sent();
-                console.log(err_3);
+                err_4 = _a.sent();
+                console.log(err_4);
                 return [3 /*break*/, 3];
             case 3: return [2 /*return*/];
         }
@@ -181,6 +188,26 @@ var getActiveUsersInRoom = function (roomId) { return __awaiter(void 0, void 0, 
     });
 }); };
 exports.getActiveUsersInRoom = getActiveUsersInRoom;
+var removeInactiveSockets = function (activeSockets, databaseSockets) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        databaseSockets.forEach(function (socketId) { return __awaiter(void 0, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (!!activeSockets.includes(socketId)) return [3 /*break*/, 2];
+                        return [4 /*yield*/, db_1.executeQuery(queries_1.query_deleteUserFromRoom, [socketId])];
+                    case 1:
+                        _a.sent();
+                        console.info("Removed inactive socket: '" + socketId + "' at: " + new Date());
+                        _a.label = 2;
+                    case 2: return [2 /*return*/];
+                }
+            });
+        }); });
+        return [2 /*return*/];
+    });
+}); };
+exports.removeInactiveSockets = removeInactiveSockets;
 var getUserById = function (id) { return __awaiter(void 0, void 0, void 0, function () {
     var response;
     return __generator(this, function (_a) {
