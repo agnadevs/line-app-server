@@ -84,11 +84,8 @@ exports.connectSocket = function (server) {
                 switch (_a.label) {
                     case 0:
                         room = data.room, user = data.user;
-                        return [4 /*yield*/, users_1.deleteUserFromRoom(socket.id)];
-                    case 1:
-                        _a.sent();
                         return [4 /*yield*/, users_1.getActiveUsersInRoom(room)];
-                    case 2:
+                    case 1:
                         activeUsers = _a.sent();
                         io.in(room).emit("activeUsersInRoom", activeUsers);
                         socket.leave(room);
@@ -102,8 +99,21 @@ exports.connectSocket = function (server) {
         }); });
         socket.on("disconnect", function () { return __awaiter(void 0, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/];
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, users_1.deleteUserFromRoom(socket.id)];
+                    case 1:
+                        _a.sent();
+                        return [2 /*return*/];
+                }
             });
         }); });
     });
+    function getActiveClients() {
+        io.of("/").clients(function (error, clients) {
+            if (error)
+                throw error;
+            console.log(clients);
+        });
+    }
+    return { getActiveClients: getActiveClients };
 };

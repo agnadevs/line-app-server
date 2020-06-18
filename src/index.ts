@@ -12,10 +12,17 @@ const http = require("http");
 const { OAuth2Client } = require("google-auth-library");
 const client = new OAuth2Client(process.env.CLIENT_ID);
 const port = 4000;
+const io = require("socket.io")();
 
 const app = express();
 const server = http.createServer(app);
-connectSocket(server);
+const { getActiveClients } = connectSocket(server);
+
+// setInterval(() => {
+//   const socketIds = getActiveClients();
+//   getAllSocketIds
+// }, 3000);
+// connectedSocket;
 
 app.use((req: Request, res: Response, next) => {
   res.header("Access-Control-Allow-Origin", "http://localhost:3000");

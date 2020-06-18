@@ -47,9 +47,15 @@ var http = require("http");
 var OAuth2Client = require("google-auth-library").OAuth2Client;
 var client = new OAuth2Client(process.env.CLIENT_ID);
 var port = 4000;
+var io = require("socket.io")();
 var app = express_1.default();
 var server = http.createServer(app);
-socket_1.connectSocket(server);
+var getActiveClients = socket_1.connectSocket(server).getActiveClients;
+// setInterval(() => {
+//   const socketIds = getActiveClients();
+//   getAllSocketIds
+// }, 3000);
+// connectedSocket;
 app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "http://localhost:3000");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");

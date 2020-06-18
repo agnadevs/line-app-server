@@ -9,6 +9,9 @@ import {
   query_addUserToRoom,
   query_deleteUserFromRoom,
   query_getActiveUsersInRoom,
+  query_getOneUserFromRoom,
+  query_updateOneUserInRoom,
+  query_getSocketIds
 } from "./database/queries";
 import { mapUserFromDB } from "./mapper";
 import { User, RawUser } from "./types";
@@ -59,25 +62,24 @@ const addUserToRoom = async (
   roomId: string
 ) => {
   try {
+    const userExists = await executeQuery(query_getOneUserFromRoom, [
+      userId,
+      roomId,
+    ]);
+    if (!!userExists.rows) {
+      await executeQuery(query_updateOneUserInRoom, [userId, socketId, roomId]);
+      return;
+    }
     await executeQuery(query_addUserToRoom, [userId, socketId, roomId]);
-    //   const { rooms } = await getFormatedDataFromJSON("dist/rooms.json");
-    //   const existingUser = rooms[room].find(
-    //     (currentUser: User) => user.userId === currentUser.userId
-    //   );
-    //   if (!!existingUser) {
-    //     rooms[room].find(
-    //       (currentUser: User) => user.userId === currentUser.userId
-    //     ).socketId = user.socketId;
-    //   } else {
-    //     rooms[room].push(user);
-    //   }
-    //   await writeDataToJSON("dist/rooms.json", { rooms });
-    //   const activeUsersInRoom = rooms[room];
-    // return activeUsersInRoom;
   } catch (err) {
     console.log(err);
   }
 };
+
+const getAllSocketIds = async () => {
+  const socketIdsInDB = await executeQuery(query_getSocketIds, [])
+  console.log(socketIdsInDB)
+}
 
 const deleteUserFromRoom = async (socketId: string) => {
   try {

@@ -106,24 +106,47 @@ var updateUserProfilePicture = function (id, pictureURL) { return __awaiter(void
 }); };
 exports.updateUserProfilePicture = updateUserProfilePicture;
 var addUserToRoom = function (userId, socketId, roomId) { return __awaiter(void 0, void 0, void 0, function () {
-    var err_2;
+    var userExists, err_2;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, db_1.executeQuery(queries_1.query_addUserToRoom, [userId, socketId, roomId])];
+                _a.trys.push([0, 5, , 6]);
+                return [4 /*yield*/, db_1.executeQuery(queries_1.query_getOneUserFromRoom, [
+                        userId,
+                        roomId,
+                    ])];
             case 1:
-                _a.sent();
-                return [3 /*break*/, 3];
+                userExists = _a.sent();
+                if (!!!userExists.rows) return [3 /*break*/, 3];
+                return [4 /*yield*/, db_1.executeQuery(queries_1.query_updateOneUserInRoom, [userId, socketId, roomId])];
             case 2:
+                _a.sent();
+                return [2 /*return*/];
+            case 3: return [4 /*yield*/, db_1.executeQuery(queries_1.query_addUserToRoom, [userId, socketId, roomId])];
+            case 4:
+                _a.sent();
+                return [3 /*break*/, 6];
+            case 5:
                 err_2 = _a.sent();
                 console.log(err_2);
-                return [3 /*break*/, 3];
-            case 3: return [2 /*return*/];
+                return [3 /*break*/, 6];
+            case 6: return [2 /*return*/];
         }
     });
 }); };
 exports.addUserToRoom = addUserToRoom;
+var getAllSocketIds = function () { return __awaiter(void 0, void 0, void 0, function () {
+    var socketIdsInDB;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, db_1.executeQuery(queries_1.query_getSocketIds, [])];
+            case 1:
+                socketIdsInDB = _a.sent();
+                console.log(socketIdsInDB);
+                return [2 /*return*/];
+        }
+    });
+}); };
 var deleteUserFromRoom = function (socketId) { return __awaiter(void 0, void 0, void 0, function () {
     var err_3;
     return __generator(this, function (_a) {

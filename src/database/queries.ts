@@ -38,14 +38,6 @@ const query_addMessage = `
   INNER JOIN users ON insertedMessage.user_id = users.id;
 `;
 
-/*
-
-SELECT messages.text, messages.user_id, messages.created_date, users.user_name FROM messages
-LEFT JOIN users
-ON messages.user_id = users.id
-WHERE messages.room_id = 'react';
-*/
-
 const query_getMessagesForRoom = `
   SELECT messages.text, messages.user_id, messages.created_date, messages.room_id, users.user_name FROM messages
   LEFT JOIN users
@@ -59,6 +51,19 @@ const query_addUserToRoom = `
   VALUES 
   ($1, $2, $3)
 `;
+
+const query_getOneUserFromRoom = `
+  SELECT * from active_users 
+  WHERE user_id=$1 
+  AND room_id=$2;
+`
+
+const query_updateOneUserInRoom = `
+  UPDATE active_users 
+  SET socket_id=$2 
+  WHERE user_id=$1 
+  AND room_id=$3;
+`
 
 const query_deleteUserFromRoom = `
     DELETE FROM active_users
@@ -78,6 +83,10 @@ const query_getActiveUsersInRoom = `
   WHERE active_users.room_id = $1;
 `;
 
+const query_getSocketIds = `
+    SELECT socket_id FROM active_users;
+`
+
 export {
   query_getUsers,
   query_getUserById,
@@ -90,4 +99,7 @@ export {
   query_addUserToRoom,
   query_deleteUserFromRoom,
   query_getActiveUsersInRoom,
+  query_getOneUserFromRoom,
+  query_updateOneUserInRoom,
+  query_getSocketIds
 };

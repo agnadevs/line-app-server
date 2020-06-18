@@ -35,8 +35,6 @@ export const connectSocket = (server: any) => {
     socket.on("leaveRoom", async (data: Data) => {
       const { room, user } = data;
 
-      await deleteUserFromRoom(socket.id);
-      
       const activeUsers = await getActiveUsersInRoom(room);
       io.in(room).emit("activeUsersInRoom", activeUsers);
       socket.leave(room);
@@ -48,9 +46,17 @@ export const connectSocket = (server: any) => {
     });
 
     socket.on("disconnect", async () => {
-      //   await deleteUserFromRoom(socket.id);
+      await deleteUserFromRoom(socket.id);
     });
   });
+  function getActiveClients() {
+    io.of("/").clients((error: any, clients: any) => {
+      if (error) throw error;
+      console.log(clients);
+    });
+  }
+
+  return { getActiveClients };
 };
 
 type Data = {
