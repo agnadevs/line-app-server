@@ -87,6 +87,28 @@ const query_getSocketIds = `
     SELECT socket_id FROM active_users;
 `;
 
+const query_getPublicRooms = `
+    SELECT * FROM rooms WHERE is_private = false;
+`;
+
+const query_getPrivateRooms = `
+  SELECT rooms.id, rooms.room_name, rooms.info_text, rooms.is_private FROM user_rooms
+  INNER JOIN rooms
+  ON user_rooms.room_id = rooms.id
+  WHERE user_rooms.user_id = $1;
+`;
+
+const query_createPrivateRoom = `
+    INSERT INTO rooms (room_name, is_private)
+    VALUES ($1, $2)
+    RETURNING *;
+`;
+
+const query_giveAccessToRoom = `
+    INSERT INTO user_rooms (user_id, room_id, is_admin)
+    VALUES ($1, $2, $3);
+`;
+
 export {
   query_getUsers,
   query_getUserById,
@@ -102,4 +124,8 @@ export {
   query_getOneUserFromRoom,
   query_updateOneUserInRoom,
   query_getSocketIds,
+  query_getPublicRooms,
+  query_getPrivateRooms,
+  query_createPrivateRoom,
+  query_giveAccessToRoom,
 };

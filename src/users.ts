@@ -63,13 +63,21 @@ const addUserToRoom = async (
   try {
     const userExists = await executeQuery(query_getOneUserFromRoom, [
       userId,
-      roomId,
+      parseInt(roomId),
     ]);
     if (!!userExists.rows.length) {
-      await executeQuery(query_updateOneUserInRoom, [userId, socketId, roomId]);
+      await executeQuery(query_updateOneUserInRoom, [
+        userId,
+        socketId,
+        parseInt(roomId),
+      ]);
       return;
     }
-    await executeQuery(query_addUserToRoom, [userId, socketId, roomId]);
+    await executeQuery(query_addUserToRoom, [
+      userId,
+      socketId,
+      parseInt(roomId),
+    ]);
   } catch (err) {
     console.log(err);
   }
@@ -95,7 +103,9 @@ const deleteUserFromRoom = async (socketId: string) => {
 };
 
 const getActiveUsersInRoom = async (roomId: string) => {
-  const activeUsers = await executeQuery(query_getActiveUsersInRoom, [roomId]);
+  const activeUsers = await executeQuery(query_getActiveUsersInRoom, [
+    parseInt(roomId),
+  ]);
   const mappedUsers = activeUsers.rows.map((user: RawUser) => {
     return mapUserFromDB(user);
   });

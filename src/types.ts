@@ -30,3 +30,17 @@ export type RawUser = {
   profile_image_url: string;
   created_date: string;
 };
+
+export type RawRoom = {
+  id: number;
+  room_name: string;
+  info_text?: string;
+  is_private: boolean;
+};
+
+export type Room = {
+  roomId: number;
+  title: string;
+  infoText?: string;
+  isPrivate: boolean;
+};

@@ -12,34 +12,34 @@ export const connectSocket = (server: any) => {
 
   io.on("connection", (socket: any) => {
     socket.on("joinRoom", async (data: Data) => {
-      const { room, user } = data;
-      socket.join(room);
+      const { roomId, user } = data;
+      socket.join(roomId);
       const socketId: string = socket.id;
 
-      await addUserToRoom(user.userId, socketId, room);
+      await addUserToRoom(user.userId, socketId, roomId);
 
-      const activeUsers = await getActiveUsersInRoom(room);
-      io.in(room).emit("activeUsersInRoom", activeUsers);
+      const activeUsers = await getActiveUsersInRoom(roomId);
+      io.in(roomId).emit("activeUsersInRoom", activeUsers);
 
-      socket.to(room).emit("messageFromServer", {
+      socket.to(roomId).emit("messageFromServer", {
         text: `${user.userName} has joined the room`,
         userName: "Line manager",
       });
 
       socket.on("messageFromClient", async (message: ChatMessage) => {
-        const newMessage = await addNewMessage(message, room);
-        io.in(room).emit("messageFromServer", newMessage);
+        const newMessage = await addNewMessage(message, roomId);
+        io.in(roomId).emit("messageFromServer", newMessage);
       });
     });
 
     socket.on("leaveRoom", async (data: Data) => {
-      const { room, user } = data;
+      const { roomId, user } = data;
 
-      const activeUsers = await getActiveUsersInRoom(room);
-      io.in(room).emit("activeUsersInRoom", activeUsers);
-      socket.leave(room);
+      const activeUsers = await getActiveUsersInRoom(roomId);
+      io.in(roomId).emit("activeUsersInRoom", activeUsers);
+      socket.leave(roomId);
 
-      socket.to(room).emit("messageFromServer", {
+      socket.to(roomId).emit("messageFromServer", {
         text: `${user.userName} has left the room`,
         userName: "Line manager",
       });
@@ -62,7 +62,7 @@ export const connectSocket = (server: any) => {
 };
 
 type Data = {
-  room: string;
+  roomId: string;
   user: {
     userName: string;
     userId: number;

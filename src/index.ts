@@ -7,6 +7,7 @@ import {
   getAllSocketIds,
   removeInactiveSockets,
 } from "./users";
+import { getRooms, createPrivateRoom } from "./rooms";
 import { User } from "./types";
 import { getMessagesForRoom } from "./messages";
 import { connectSocket } from "./socket";
@@ -52,10 +53,10 @@ app.put("/api/users/update", async (req: Request, res: Response) => {
   }
 });
 
-app.get("/api/chat/:room", async (req: Request, res: Response) => {
-  const { room } = req.params;
+app.get("/api/chat/:roomId", async (req: Request, res: Response) => {
+  const { roomId } = req.params;
   try {
-    const history = await getMessagesForRoom(room);
+    const history = await getMessagesForRoom(roomId);
     res.send({ error: null, data: history });
   } catch (err) {
     res.send({ error: err, data: null });
@@ -87,6 +88,26 @@ app.post("/api/login", async (req: Request, res: Response) => {
       picture
     );
     res.send({ error: null, data: newUser });
+  } catch (err) {
+    res.send({ error: err, data: null });
+  }
+});
+
+app.get("/api/rooms/user/:userId", async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const rooms = await getRooms(userId);
+    res.send({ error: null, data: rooms });
+  } catch (err) {
+    res.send({ error: err, data: null });
+  }
+});
+
+app.post("/api/rooms/private", async (req: Request, res: Response) => {
+  const { userId, roomName } = req.body;
+  try {
+    const newRoom = await createPrivateRoom(userId, roomName);
+    res.send({ error: null, data: newRoom });
   } catch (err) {
     res.send({ error: err, data: null });
   }
