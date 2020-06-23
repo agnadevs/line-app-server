@@ -109,6 +109,10 @@ const query_giveAccessToRoom = `
     VALUES ($1, $2, $3);
 `;
 
+const query_getAllUsers = `
+    SELECT * FROM users;
+`;
+
 export {
   query_getUsers,
   query_getUserById,
@@ -128,4 +132,5 @@ export {
   query_getPrivateRooms,
   query_createPrivateRoom,
   query_giveAccessToRoom,
+  query_getAllUsers,
 };

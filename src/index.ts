@@ -6,6 +6,7 @@ import {
   updateUserProfilePicture,
   getAllSocketIds,
   removeInactiveSockets,
+  getAllUsers,
 } from "./users";
 import { getRooms, createPrivateRoom } from "./rooms";
 import { User } from "./types";
@@ -109,6 +110,16 @@ app.post("/api/rooms/private", async (req: Request, res: Response) => {
     const newRoom = await createPrivateRoom(userId, roomName);
     res.send({ error: null, data: newRoom });
   } catch (err) {
+    res.send({ error: err, data: null });
+  }
+});
+
+app.get("/api/users", async (req: Request, res: Response) => {
+  try {
+    const users = await getAllUsers();
+    res.send({ error: null, data: users });
+  } catch (err) {
+    console.log(err);
     res.send({ error: err, data: null });
   }
 });

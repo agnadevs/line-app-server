@@ -12,6 +12,7 @@ import {
   query_getOneUserFromRoom,
   query_updateOneUserInRoom,
   query_getSocketIds,
+  query_getAllUsers,
 } from "./database/queries";
 import { mapUserFromDB } from "./mapper";
 import { User, RawUser } from "./types";
@@ -129,6 +130,14 @@ const getUserById = async (id: number) => {
   return !!response.rows.length ? response.rows[0] : null;
 };
 
+const getAllUsers = async () => {
+  const users = await executeQuery(query_getAllUsers, []);
+  const mappedUsers = users.rows.map((user: RawUser) => {
+    return mapUserFromDB(user);
+  });
+  return mappedUsers;
+};
+
 export {
   addNewUser,
   getUserByGoogleId,
@@ -140,4 +149,5 @@ export {
   getActiveUsersInRoom,
   getAllSocketIds,
   removeInactiveSockets,
+  getAllUsers,
 };
