@@ -7,6 +7,7 @@ import {
   getAllSocketIds,
   removeInactiveSockets,
   getAllUsers,
+  getUsersWithAccessToRoom,
 } from "./users";
 import { getRooms, createPrivateRoom } from "./rooms";
 import { User } from "./types";
@@ -99,6 +100,20 @@ app.get("/api/rooms/user/:userId", async (req: Request, res: Response) => {
     const { userId } = req.params;
     const rooms = await getRooms(userId);
     res.send({ error: null, data: rooms });
+  } catch (err) {
+    res.send({ error: err, data: null });
+  }
+});
+
+app.get("/api/rooms/:roomId/users", async (req: Request, res: Response) => {
+  try {
+    const { roomId } = req.params;
+    const usersWithAccess = await getUsersWithAccessToRoom(roomId);
+    const allUsers = await getAllUsers();
+    const usersWithoutAccess = allUsers.filter(
+      (u: User) => !usersWithAccess.find((au: User) => au.userId === u.userId)
+    );
+    res.send({ error: null, data: { usersWithAccess, usersWithoutAccess } });
   } catch (err) {
     res.send({ error: err, data: null });
   }

@@ -1,4 +1,3 @@
-import { getFormatedDataFromJSON, writeDataToJSON } from "./utils";
 import { executeQuery } from "./database/db";
 import {
   query_addUser,
@@ -9,6 +8,7 @@ import {
   query_addUserToRoom,
   query_deleteUserFromRoom,
   query_getActiveUsersInRoom,
+  query_getUsersWithAccessByRoom,
   query_getOneUserFromRoom,
   query_updateOneUserInRoom,
   query_getSocketIds,
@@ -113,6 +113,16 @@ const getActiveUsersInRoom = async (roomId: string) => {
   return mappedUsers;
 };
 
+const getUsersWithAccessToRoom = async (roomId: string) => {
+  const accessUsers = await executeQuery(query_getUsersWithAccessByRoom, [
+    parseInt(roomId),
+  ]);
+  const mappedUsers = accessUsers.rows.map((user: RawUser) => {
+    return mapUserFromDB(user);
+  });
+  return mappedUsers;
+};
+
 const removeInactiveSockets = async (
   activeSockets: string[],
   databaseSockets: string[]
@@ -147,6 +157,7 @@ export {
   updateUserName,
   updateUserProfilePicture,
   getActiveUsersInRoom,
+  getUsersWithAccessToRoom,
   getAllSocketIds,
   removeInactiveSockets,
   getAllUsers,

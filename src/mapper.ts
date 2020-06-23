@@ -16,6 +16,7 @@ const mapUserFromDB = (userObj: RawUser) => {
     firstName: userObj.first_name,
     lastName: userObj.last_name,
     profileImageURL: userObj.profile_image_url,
+    isRoomAdmin: userObj.is_admin ? userObj.is_admin : null,
   };
 };
 

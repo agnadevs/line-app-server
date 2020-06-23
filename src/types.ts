@@ -6,6 +6,7 @@ export type User = {
   profileImageURL?: string;
   createdAt?: string;
   socketId?: string;
+  isRoomAdmin?: boolean;
 };
 
 export type ChatMessage = {
@@ -29,6 +30,7 @@ export type RawUser = {
   last_name: string;
   profile_image_url: string;
   created_date: string;
+  is_admin?: boolean;
 };
 
 export type RawRoom = {

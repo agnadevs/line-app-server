@@ -113,6 +113,20 @@ const query_getAllUsers = `
     SELECT * FROM users;
 `;
 
+const query_getUsersWithAccessByRoom = `
+  SELECT
+    users.id,
+    users.user_name,
+    users.first_name,
+    users.last_name,
+    users.profile_image_url,
+    user_rooms.is_admin
+  FROM user_rooms
+  INNER JOIN users
+  ON user_rooms.user_id = users.id
+  WHERE user_rooms.room_id = $1
+`;
+
 export {
   query_getUsers,
   query_getUserById,
@@ -133,4 +147,5 @@ export {
   query_createPrivateRoom,
   query_giveAccessToRoom,
   query_getAllUsers,
+  query_getUsersWithAccessByRoom,
 };
