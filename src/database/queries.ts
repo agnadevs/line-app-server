@@ -127,6 +127,13 @@ const query_getUsersWithAccessByRoom = `
   WHERE user_rooms.room_id = $1
 `;
 
+const query_updateRoomName = `
+  UPDATE rooms
+  SET room_name = $2
+  WHERE id = $1
+  RETURNING *;
+`;
+
 export {
   query_getUsers,
   query_getUserById,
@@ -148,4 +155,5 @@ export {
   query_giveAccessToRoom,
   query_getAllUsers,
   query_getUsersWithAccessByRoom,
+  query_updateRoomName,
 };

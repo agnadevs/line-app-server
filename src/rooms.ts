@@ -3,6 +3,7 @@ import {
   query_createPrivateRoom,
   query_giveAccessToRoom,
   query_getPrivateRooms,
+  query_updateRoomName,
 } from "./database/queries";
 import { executeQuery } from "./database/db";
 import { mapRoomFromDB } from "./mapper";
@@ -27,6 +28,15 @@ const createPrivateRoom = async (userId: number, roomName: string) => {
   return mappedRoom;
 };
 
+const updatePrivateRoom = async (roomId: string, roomName: string) => {
+  const updatedRoom = await executeQuery(query_updateRoomName, [
+    parseInt(roomId),
+    roomName,
+  ]);
+  const mappedRoom = mapRoomFromDB(updatedRoom.rows[0]);
+  return mappedRoom;
+};
+
 const giveAccessToRoom = async (
   userId: number,
   roomId: number,
@@ -35,4 +45,4 @@ const giveAccessToRoom = async (
   await executeQuery(query_giveAccessToRoom, [userId, roomId, isAdmin]);
 };
 
-export { getRooms, createPrivateRoom };
+export { getRooms, createPrivateRoom, updatePrivateRoom };

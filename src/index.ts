@@ -9,7 +9,7 @@ import {
   getAllUsers,
   getUsersWithAccessToRoom,
 } from "./users";
-import { getRooms, createPrivateRoom } from "./rooms";
+import { getRooms, createPrivateRoom, updatePrivateRoom } from "./rooms";
 import { User } from "./types";
 import { getMessagesForRoom } from "./messages";
 import { connectSocket } from "./socket";
@@ -119,11 +119,23 @@ app.get("/api/rooms/:roomId/users", async (req: Request, res: Response) => {
   }
 });
 
-app.post("/api/rooms/private", async (req: Request, res: Response) => {
+app.post("/api/rooms", async (req: Request, res: Response) => {
   const { userId, roomName } = req.body;
   try {
     const newRoom = await createPrivateRoom(userId, roomName);
     res.send({ error: null, data: newRoom });
+  } catch (err) {
+    res.send({ error: err, data: null });
+  }
+});
+
+app.put("/api/rooms/:roomId/update", async (req: Request, res: Response) => {
+  const { roomName } = req.body;
+  const { roomId } = req.params;
+  console.log(roomName, roomId);
+  try {
+    const updatedRoom = await updatePrivateRoom(roomId, roomName);
+    res.send({ error: null, data: updatedRoom });
   } catch (err) {
     res.send({ error: err, data: null });
   }
