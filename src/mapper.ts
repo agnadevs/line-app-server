@@ -16,7 +16,6 @@ const mapUserFromDB = (userObj: RawUser) => {
     firstName: userObj.first_name,
     lastName: userObj.last_name,
     profileImageURL: userObj.profile_image_url,
-    isRoomAdmin: userObj.is_admin ? userObj.is_admin : null,
   };
 };
 
@@ -24,8 +23,8 @@ const mapRoomFromDB = (roomObj: RawRoom) => {
   return {
     roomId: roomObj.id,
     title: upperCaseFirstLetter(roomObj.room_name),
-    infoText: roomObj.info_text,
     isPrivate: roomObj.is_private,
+    adminId: roomObj.admin_id,
   };
 };
 

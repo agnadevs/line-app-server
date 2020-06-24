@@ -34,8 +34,34 @@ CREATE TABLE users (
 	profile_image_url varchar,
 	created_date timestamp default current_timestamp
 );
+*/
 
-DROP TABLE IF EXISTS messages;
+/** 
+  DROP TABLE IF EXISTS active_users;
+  DROP TABLE IF EXISTS user_rooms;
+  DROP TABLE IF EXISTS messages;
+  DROP TABLE IF EXISTS rooms;
+
+CREATE TABLE rooms (
+	id serial not null PRIMARY KEY,
+	room_name varchar not null,
+	is_private boolean not null,
+  admin_id integer,
+  FOREIGN KEY (admin_id) REFERENCES users (id)
+);
+
+INSERT INTO rooms (room_name, is_private, admin_id) 
+VALUES ('general', false, null);
+
+INSERT INTO rooms (room_name, is_private, admin_id) 
+VALUES ('react', false, null);
+
+INSERT INTO rooms (room_name, is_private, admin_id) 
+VALUES ('vue', false, null);
+
+INSERT INTO rooms (room_name, is_private, admin_id) 
+VALUES ('node', false, null);
+
 CREATE TABLE messages (
 	id serial not null PRIMARY KEY,
 	user_id integer not null,
@@ -46,34 +72,22 @@ CREATE TABLE messages (
 	created_date timestamp default current_timestamp 
 );
 
-DROP TABLE IF EXISTS user_rooms;
 CREATE TABLE user_rooms (
   id serial not null PRIMARY KEY,
   user_id integer not null,
 	FOREIGN KEY (user_id) REFERENCES users (id),
 	room_id integer not null,
   FOREIGN KEY (room_id) REFERENCES rooms (id),
-  created_date timestamp default current_timestamp,
-  is_admin bool not null
-)
+  created_date timestamp default current_timestamp
+);
 
-DROP TABLE IF EXISTS active_users;
 CREATE TABLE active_users (
   id serial not null PRIMARY KEY,
   user_id integer not null,
   FOREIGN KEY (user_id) REFERENCES users (id),
   socket_id varchar not null,
-  room_id varchar not null,
+  room_id integer not null,
+  FOREIGN KEY (room_id) REFERENCES rooms (id),
 	created_date timestamp default current_timestamp 
 );
-
-DROP TABLE IF EXISTS rooms;
-CREATE TABLE rooms (
-	id serial not null PRIMARY KEY,
-	title integer not null,
-	user_id integer not null,
-  info_text varchar not null
-);
-
-
 */

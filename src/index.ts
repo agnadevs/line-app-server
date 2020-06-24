@@ -9,7 +9,13 @@ import {
   getAllUsers,
   getUsersWithAccessToRoom,
 } from "./users";
-import { getRooms, createPrivateRoom, updatePrivateRoom } from "./rooms";
+import {
+  getRooms,
+  createPrivateRoom,
+  updatePrivateRoom,
+  giveAccessToRoom,
+  deleteAccessToRoom,
+} from "./rooms";
 import { User } from "./types";
 import { getMessagesForRoom } from "./messages";
 import { connectSocket } from "./socket";
@@ -35,12 +41,11 @@ app.use((req: Request, res: Response, next) => {
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content-Type, Accept"
   );
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
   next();
 });
 
 app.use(express.json());
-
 app.get("/api/healthCheck", (req: Request, res: Response) => {
   res.send({ message: "Gris" });
 });
@@ -132,7 +137,6 @@ app.post("/api/rooms", async (req: Request, res: Response) => {
 app.put("/api/rooms/:roomId/update", async (req: Request, res: Response) => {
   const { roomName } = req.body;
   const { roomId } = req.params;
-  console.log(roomName, roomId);
   try {
     const updatedRoom = await updatePrivateRoom(roomId, roomName);
     res.send({ error: null, data: updatedRoom });
@@ -141,12 +145,51 @@ app.put("/api/rooms/:roomId/update", async (req: Request, res: Response) => {
   }
 });
 
+app.post(
+  "/api/rooms/:roomId/users/:userId",
+  async (req: Request, res: Response) => {
+    const { roomId, userId } = req.params;
+
+    try {
+      await giveAccessToRoom(Number(userId), Number(roomId));
+
+      const usersWithAccess = await getUsersWithAccessToRoom(roomId);
+      const allUsers = await getAllUsers();
+      const usersWithoutAccess = allUsers.filter(
+        (u: User) => !usersWithAccess.find((au: User) => au.userId === u.userId)
+      );
+      res.send({ error: null, data: { usersWithAccess, usersWithoutAccess } });
+    } catch (err) {
+      res.send({ error: err, data: null });
+    }
+  }
+);
+
+app.delete(
+  "/api/rooms/:roomId/users/:userId",
+  async (req: Request, res: Response) => {
+    const { roomId, userId } = req.params;
+
+    try {
+      await deleteAccessToRoom(Number(userId), Number(roomId));
+
+      const usersWithAccess = await getUsersWithAccessToRoom(roomId);
+      const allUsers = await getAllUsers();
+      const usersWithoutAccess = allUsers.filter(
+        (u: User) => !usersWithAccess.find((au: User) => au.userId === u.userId)
+      );
+      res.send({ error: null, data: { usersWithAccess, usersWithoutAccess } });
+    } catch (err) {
+      res.send({ error: err, data: null });
+    }
+  }
+);
+
 app.get("/api/users", async (req: Request, res: Response) => {
   try {
     const users = await getAllUsers();
     res.send({ error: null, data: users });
   } catch (err) {
-    console.log(err);
     res.send({ error: err, data: null });
   }
 });

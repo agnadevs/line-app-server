@@ -4,6 +4,7 @@ import {
   query_giveAccessToRoom,
   query_getPrivateRooms,
   query_updateRoomName,
+  query_deleteAccessToRoom,
 } from "./database/queries";
 import { executeQuery } from "./database/db";
 import { mapRoomFromDB } from "./mapper";
@@ -22,8 +23,12 @@ const getRooms = async (userId: string) => {
 };
 
 const createPrivateRoom = async (userId: number, roomName: string) => {
-  const newRoom = await executeQuery(query_createPrivateRoom, [roomName, true]);
-  await giveAccessToRoom(userId, newRoom.rows[0].id, true);
+  const newRoom = await executeQuery(query_createPrivateRoom, [
+    roomName,
+    true,
+    userId,
+  ]);
+  await giveAccessToRoom(userId, newRoom.rows[0].id);
   const mappedRoom = mapRoomFromDB(newRoom.rows[0]);
   return mappedRoom;
 };
@@ -37,12 +42,18 @@ const updatePrivateRoom = async (roomId: string, roomName: string) => {
   return mappedRoom;
 };
 
-const giveAccessToRoom = async (
-  userId: number,
-  roomId: number,
-  isAdmin: boolean
-) => {
-  await executeQuery(query_giveAccessToRoom, [userId, roomId, isAdmin]);
+const giveAccessToRoom = async (userId: number, roomId: number) => {
+  await executeQuery(query_giveAccessToRoom, [userId, roomId]);
 };
 
-export { getRooms, createPrivateRoom, updatePrivateRoom };
+const deleteAccessToRoom = async (userId: number, roomId: number) => {
+  await executeQuery(query_deleteAccessToRoom, [userId, roomId]);
+};
+
+export {
+  getRooms,
+  createPrivateRoom,
+  updatePrivateRoom,
+  giveAccessToRoom,
+  deleteAccessToRoom,
+};

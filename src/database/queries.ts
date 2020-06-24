@@ -92,21 +92,21 @@ const query_getPublicRooms = `
 `;
 
 const query_getPrivateRooms = `
-  SELECT rooms.id, rooms.room_name, rooms.info_text, rooms.is_private FROM user_rooms
+  SELECT rooms.id, rooms.room_name, rooms.is_private, rooms.admin_id FROM user_rooms
   INNER JOIN rooms
   ON user_rooms.room_id = rooms.id
   WHERE user_rooms.user_id = $1;
 `;
 
 const query_createPrivateRoom = `
-    INSERT INTO rooms (room_name, is_private)
-    VALUES ($1, $2)
+    INSERT INTO rooms (room_name, is_private, admin_id)
+    VALUES ($1, $2, $3)
     RETURNING *;
 `;
 
 const query_giveAccessToRoom = `
-    INSERT INTO user_rooms (user_id, room_id, is_admin)
-    VALUES ($1, $2, $3);
+    INSERT INTO user_rooms (user_id, room_id)
+    VALUES ($1, $2);
 `;
 
 const query_getAllUsers = `
@@ -120,7 +120,7 @@ const query_getUsersWithAccessByRoom = `
     users.first_name,
     users.last_name,
     users.profile_image_url,
-    user_rooms.is_admin
+    user_rooms.user_id
   FROM user_rooms
   INNER JOIN users
   ON user_rooms.user_id = users.id
@@ -132,6 +132,12 @@ const query_updateRoomName = `
   SET room_name = $2
   WHERE id = $1
   RETURNING *;
+`;
+
+const query_deleteAccessToRoom = `
+    DELETE FROM user_rooms 
+    WHERE user_id = $1
+    AND room_id = $2;
 `;
 
 export {
@@ -156,4 +162,5 @@ export {
   query_getAllUsers,
   query_getUsersWithAccessByRoom,
   query_updateRoomName,
+  query_deleteAccessToRoom,
 };
