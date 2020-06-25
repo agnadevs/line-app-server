@@ -34,6 +34,7 @@ export const connectSocket = (server: any) => {
 
     socket.on("leaveRoom", async (data: Data) => {
       const { roomId, user } = data;
+      await deleteUserFromRoom(socket.id);
 
       const activeUsers = await getActiveUsersInRoom(roomId);
       io.in(roomId).emit("activeUsersInRoom", activeUsers);
