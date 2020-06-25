@@ -110,6 +110,7 @@ const getActiveUsersInRoom = async (roomId: string) => {
   const mappedUsers = activeUsers.rows.map((user: RawUser) => {
     return mapUserFromDB(user);
   });
+  console.log(mappedUsers);
   return mappedUsers;
 };
 

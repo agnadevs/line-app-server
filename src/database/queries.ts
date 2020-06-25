@@ -76,7 +76,7 @@ const query_getActiveUsersInRoom = `
     users.user_name,
     users.first_name,
     users.last_name,
-    profile_image_url
+    users.profile_image_url
   FROM active_users
   LEFT JOIN users
   ON active_users.user_id = users.id
