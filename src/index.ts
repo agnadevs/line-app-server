@@ -60,7 +60,7 @@ app.put("/api/users/update", async (req: Request, res: Response) => {
   }
 });
 
-app.get("/api/chat/:roomId", async (req: Request, res: Response) => {
+app.get("/api/rooms/:roomId/messages", async (req: Request, res: Response) => {
   const { roomId } = req.params;
   try {
     const history = await getMessagesForRoom(roomId);
