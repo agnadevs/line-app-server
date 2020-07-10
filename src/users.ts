@@ -13,6 +13,10 @@ import {
   query_updateOneUserInRoom,
   query_getSocketIds,
   query_getAllUsers,
+  query_deleteFromUserRooms,
+  query_deleteFromMessages,
+  query_deleteFromRooms,
+  query_deleteFromUsers,
 } from "./database/queries";
 import { mapUserFromDB } from "./mapper";
 import { User, RawUser } from "./types";
@@ -103,6 +107,17 @@ const deleteUserFromRoom = async (socketId: string) => {
   }
 };
 
+const deleteUserAccount = async (userId: string) => {
+  try {
+    await executeQuery(query_deleteFromUserRooms, [userId]);
+    await executeQuery(query_deleteFromMessages, [userId]);
+    await executeQuery(query_deleteFromRooms, [userId]);
+    await executeQuery(query_deleteFromUsers, [userId]);
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 const getActiveUsersInRoom = async (roomId: string) => {
   const activeUsers = await executeQuery(query_getActiveUsersInRoom, [
     parseInt(roomId),
@@ -154,6 +169,7 @@ export {
   getUserById,
   addUserToRoom,
   deleteUserFromRoom,
+  deleteUserAccount,
   updateUserName,
   updateUserProfilePicture,
   getActiveUsersInRoom,

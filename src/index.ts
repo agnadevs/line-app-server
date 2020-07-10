@@ -8,6 +8,7 @@ import {
   removeInactiveSockets,
   getAllUsers,
   getUsersWithAccessToRoom,
+  deleteUserAccount,
 } from "./users";
 import {
   getRooms,
@@ -184,6 +185,18 @@ app.delete(
     }
   }
 );
+
+app.delete("/api/users/:userId", async (req: Request, res: Response) => {
+  const { userId } = req.params;
+  try {
+    // kommentera ut denna rad för att se hela flödet, utan att ta bort kontot.
+    await deleteUserAccount(userId);
+    // ------------------------------------------------------------------------
+    res.send({ error: null, data: "Your account has been deleted." });
+  } catch (err) {
+    res.send({ error: err, data: null });
+  }
+});
 
 app.get("/api/users", async (req: Request, res: Response) => {
   try {

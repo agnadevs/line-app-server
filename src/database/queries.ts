@@ -135,9 +135,22 @@ const query_updateRoomName = `
 `;
 
 const query_deleteAccessToRoom = `
-    DELETE FROM user_rooms 
-    WHERE user_id = $1
-    AND room_id = $2;
+  DELETE FROM user_rooms
+  WHERE user_id = $1
+  AND room_id = $2;
+`;
+
+const query_deleteFromUserRooms = `
+  DELETE FROM user_rooms WHERE user_id = $1;
+`;
+const query_deleteFromMessages = `
+  DELETE FROM messages WHERE user_id = $1;
+`;
+const query_deleteFromRooms = `
+  DELETE FROM rooms WHERE admin_id = $1;
+`;
+const query_deleteFromUsers = `
+  DELETE FROM users WHERE id = $1;
 `;
 
 export {
@@ -163,4 +176,8 @@ export {
   query_getUsersWithAccessByRoom,
   query_updateRoomName,
   query_deleteAccessToRoom,
+  query_deleteFromUserRooms,
+  query_deleteFromMessages,
+  query_deleteFromRooms,
+  query_deleteFromUsers,
 };
